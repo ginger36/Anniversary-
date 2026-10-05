@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>คืนนี้ฝนตกอีกแล้วนะ...</title>
-    <!-- Google Fonts: Sarabun สำหรับเนื้อเรื่องทั่วไป และ Caveat สำหรับข้อความลายมือโพลารอยด์ -->
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Prompt:wght@300;400;500&family=Sarabun:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <title>ปลายฝนต้นหนาว - ความทรงจำของเรา ♡</title>
+    <link href="https://fonts.googleapis.com/css2?family=Itim&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -14,707 +13,691 @@
             user-select: none;
             -webkit-user-select: none;
         }
-
-        body {
-            background-color: #030509;
-            font-family: 'Prompt', sans-serif;
-            color: #e2e8f0;
-            height: 100vh;
-            height: 100dvh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        body, html {
+            width: 100%;
+            height: 100%;
             overflow: hidden;
+            font-family: 'Itim', 'Sarabun', cursive, sans-serif;
+            background: #0f172a;
+            color: #fff;
         }
-
-        /* Mobile Container Ratio 9:16 Frame */
         #app-container {
-            width: 100%;
-            max-width: 420px;
-            height: 100%;
-            max-height: 880px;
-            background: #080c18;
             position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
             overflow: hidden;
-            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
         }
-
-        @media (min-width: 424px) {
-            #app-container {
-                border-radius: 36px;
-                border: 10px solid #1a202c;
-                height: 92vh;
-            }
-        }
-
-        /* --- CAMERA & PARALLAX SCENE SYSTEM --- */
-        #camera-rig {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 220%; /* ขยายความกว้างเพื่อให้กล้อง Pan ซ้าย-ขวาได้ */
-            height: 100%;
-            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-            will-change: transform;
-        }
-
-        /* Parallax Layers */
-        .parallax-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            will-change: transform;
-        }
-
-        /* Canvas ฝนและละอองน้ำ */
         canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            z-index: 25;
-        }
-
-        /* Film Grain Overlay */
-        .grain-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
-            pointer-events: none;
-            z-index: 30;
-        }
-
-        /* --- BACKGROUND SKY & WORLD GRADIENT --- */
-        .world-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, #070b16 0%, #11182c 50%, #191424 100%);
-            transition: background 2.5s ease;
-            z-index: 1;
-        }
-        .world-bg.sunset {
-            background: linear-gradient(180deg, #2b1428 0%, #5c2d33 40%, #9e4e3b 75%, #d18250 100%);
-        }
-
-        /* --- VECTOR CITY ILLUSTRATIONS (CSS / SVG SIMULATION) --- */
-        .city-layer {
-            position: absolute;
-            bottom: 22%;
-            left: 0;
-            width: 100%;
-            height: 50%;
-            z-index: 3;
-        }
-
-        /* Windows with flickering lights */
-        .building-window {
-            position: absolute;
-            background: rgba(246, 173, 85, 0.85);
-            border-radius: 2px;
-            box-shadow: 0 0 8px rgba(246, 173, 85, 0.6);
-            animation: windowFlicker 4s infinite alternate;
-        }
-        @keyframes windowFlicker {
-            0% { opacity: 0.7; }
-            50% { opacity: 1; filter: drop-shadow(0 0 12px #f6ad55); }
-            100% { opacity: 0.6; }
-        }
-
-        /* Road & Water Puddle Reflection */
-        .road-layer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 25%;
-            background: linear-gradient(180deg, #0d1222 0%, #05070f 100%);
-            border-top: 1px solid rgba(246, 173, 85, 0.25);
-            z-index: 5;
-        }
-
-        /* Paper Boat Animation */
-        #paper-boat {
-            position: absolute;
-            bottom: 12%;
-            left: 35%;
-            font-size: 24px;
-            z-index: 10;
-            cursor: pointer;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
-            animation: boatFloat 3.5s ease-in-out infinite;
-            transition: transform 0.3s;
-        }
-        #paper-boat:hover { transform: scale(1.15); }
-        @keyframes boatFloat {
-            0%, 100% { transform: translateY(0) rotate(-2deg); }
-            50% { transform: translateY(-6px) rotate(3deg); }
-        }
-
-        /* Steam from Coffee Shop */
-        .steam-particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.25);
-            border-radius: 50%;
-            filter: blur(4px);
-            animation: steamRise 3s infinite linear;
-            pointer-events: none;
-            z-index: 8;
-        }
-        @keyframes steamRise {
-            0% { transform: translateY(0) scale(0.8); opacity: 0; }
-            50% { opacity: 0.4; }
-            100% { transform: translateY(-40px) scale(1.6); opacity: 0; }
-        }
-
-        /* --- INTERACTIVE HOTSPOTS --- */
-        .interactive-obj {
-            position: absolute;
-            cursor: pointer;
-            z-index: 15;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .interactive-obj:hover { transform: scale(1.08); }
-        .interactive-obj:active { transform: scale(0.95); }
-
-        .pulse-hint {
-            animation: hintGlow 2.5s infinite ease-in-out;
-        }
-        @keyframes hintGlow {
-            0%, 100% { filter: drop-shadow(0 0 3px rgba(246,173,85,0.4)); }
-            50% { filter: drop-shadow(0 0 12px rgba(246,173,85,0.9)); }
-        }
-
-        /* --- STORY HUD DIALOGUE BOX --- */
-        .story-hud {
-            position: absolute;
-            bottom: 25px;
-            left: 20px;
-            right: 20px;
-            background: rgba(10, 14, 24, 0.88);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.12);
-            padding: 16px 20px;
-            border-radius: 16px;
-            z-index: 50;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
-            pointer-events: none;
-        }
-        .story-hud.show {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-        .story-hud-text {
-            font-family: 'Sarabun', sans-serif;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #f1f5f9;
-            text-align: center;
-            min-height: 45px;
-        }
-        .story-hud-close {
             display: block;
-            margin: 10px auto 0 auto;
-            background: none;
-            border: none;
-            color: #f6ad55;
-            font-size: 0.85rem;
-            cursor: pointer;
         }
-
-        /* --- MODALS (POLAROID & LETTER) --- */
-        .modal-overlay {
+        /* UI Overlays */
+        .ui-layer {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 5, 10, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 60;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s ease;
-        }
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Polaroid */
-        .polaroid-card {
-            background: #fdfbf7;
-            padding: 16px 16px 42px 16px;
-            width: 270px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-            transform: scale(0.7) rotate(-6deg);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            color: #2d3748;
-            text-align: center;
-        }
-        .modal-overlay.show .polaroid-card {
-            transform: scale(1) rotate(-2.5deg);
-        }
-        .polaroid-card::before {
-            content: '';
-            position: absolute;
-            top: -10px; left: 50%;
-            transform: translateX(-50%);
-            width: 70px; height: 22px;
-            background: rgba(255, 255, 255, 0.65);
-            border-left: 2px dashed rgba(0,0,0,0.15);
-            border-right: 2px dashed rgba(0,0,0,0.15);
-        }
-        .polaroid-img-box {
-            width: 100%; height: 180px;
-            background: #232d42;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 2.5rem;
-        }
-        .polaroid-caption {
-            margin-top: 14px;
-            font-family: 'Caveat', cursive;
-            font-size: 1.5rem;
-            color: #4a5568;
-        }
-
-        /* Letter Box */
-        .letter-modal-box {
-            width: 310px;
-            background: #f4eee1;
-            padding: 28px 22px;
-            border-radius: 4px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-            color: #2c2c2c;
-            font-family: 'Sarabun', sans-serif;
-            position: relative;
-            transform: translateY(40px);
-            opacity: 0;
-            transition: all 0.5s ease;
-        }
-        .modal-overlay.show .letter-modal-box {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        .letter-content {
-            font-size: 1.05rem;
-            line-height: 1.9;
-            white-space: pre-line;
-            min-height: 150px;
-        }
-
-        /* --- INTRO SCREEN --- */
-        #intro-screen {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(6, 9, 17, 0.94);
-            z-index: 70;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 30px;
-            transition: opacity 0.8s ease;
+            justify-content: space-between;
+            padding: 20px;
+            z-index: 10;
         }
-        #intro-screen.hide {
-            opacity: 0;
-            pointer-events: none;
+        .interactive {
+            pointer-events: auto;
         }
-        .glow-btn {
-            background: linear-gradient(135deg, #f6ad55, #ed8936);
-            color: #111827;
-            border: none;
-            padding: 14px 36px;
-            font-size: 1.05rem;
-            font-weight: 500;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 0 25px rgba(237, 137, 54, 0.4);
-            transition: transform 0.2s;
-            margin-top: 25px;
-        }
-        .glow-btn:active { transform: scale(0.95); }
-
-        /* UI Top bar */
-        .top-ui {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
+        header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 45;
-            pointer-events: none;
         }
-        .ui-pill {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.15);
+        .progress-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
             padding: 6px 14px;
             border-radius: 20px;
-            font-size: 0.8rem;
-            backdrop-filter: blur(4px);
-            pointer-events: auto;
-        }
-        .audio-btn {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.15);
+            font-size: 16px;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
             color: #fff;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 11px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .music-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
             cursor: pointer;
-            backdrop-filter: blur(4px);
-            pointer-events: auto;
+            transition: transform 0.2s;
+        }
+        .music-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Start Screen Overlay */
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e1b4b, #312e81, #701a75);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 30px;
+            text-align: center;
+        }
+        #start-screen h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #fbcfe8;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        #start-screen p {
+            font-size: 16px;
+            color: #e2e8f0;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .start-btn {
+            background: linear-gradient(135deg, #f43f5e, #fb7185);
+            color: white;
+            border: none;
+            padding: 14px 36px;
+            font-size: 18px;
+            font-family: 'Itim', cursive;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .start-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(244, 63, 94, 0.4);
+        }
+
+        /* Hint instruction at bottom */
+        .bottom-hint {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #f8fafc;
+            animation: pulseHint 2s infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes pulseHint {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        /* Memory Modal Overlay */
+        #memory-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #memory-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        .memory-card {
+            background: #fff;
+            color: #1e293b;
+            width: 100%;
+            max-width: 340px;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            transform: scale(0.8) rotate(-2deg);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #memory-modal.show .memory-card {
+            transform: scale(1) rotate(0deg);
+        }
+        .card-tape {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 24px;
+            background: rgba(255, 235, 59, 0.4);
+            border: 1px dashed rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e11d48;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .card-img-container {
+            width: 100%;
+            height: 200px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+        .card-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .placeholder-text {
+            color: #94a3b8;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+        }
+        .card-message {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #334155;
+            min-height: 60px;
+            text-align: center;
+            white-space: pre-line;
+            margin-bottom: 20px;
+        }
+        .close-card-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #e11d48;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Itim', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .close-card-btn:hover {
+            background: #be123c;
+        }
+
+        /* Final Confession Overlay */
+        #final-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 60;
+            padding: 30px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        #final-screen.show {
+            display: flex;
+            opacity: 1;
+        }
+        .final-content h2 {
+            font-size: 26px;
+            color: #f43f5e;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        .final-content p {
+            font-size: 18px;
+            color: #f8fafc;
+            line-height: 1.6;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
 
     <div id="app-container">
-        <!-- Film Grain Overlay -->
-        <div class="grain-overlay"></div>
-
-        <!-- Rain & Ripple Canvas (Continuous Animation) -->
-        <canvas id="liveCanvas"></canvas>
-
-        <!-- Top UI Controls -->
-        <div class="top-ui">
-            <button class="audio-btn" id="audioToggleBtn" onclick="toggleAudio()">🔊 เสียงฝน</button>
-            <div class="ui-pill" id="progressIndicator">ความทรงจำ 0/4</div>
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <h1>ปลายฝนต้นหนาว ♡</h1>
+            <p>เดินเล่นริมชายหาดช่วงพระอาทิตย์ตก<br>และค้นหาความทรงจำ 6 อย่างที่ซ่อนอยู่ด้วยกันนะ...</p>
+            <button class="start-btn" onclick="startExperience()">เริ่มต้นเรื่องราว</button>
         </div>
 
-        <!-- --- INTRO START SCREEN --- -->
-        <div id="intro-screen">
-            <p style="font-family: 'Sarabun', sans-serif; font-size: 1.4rem; color: #cbd5e1; margin-bottom: 12px; line-height: 1.8;">
-                "คืนนี้ฝนตกอีกแล้วนะ..."
-            </p>
-            <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 30px; font-weight: 300;">
-                แตะสำรวจเมืองเล็กๆ ยามค่ำคืน เพื่อค้นหาความทรงจำที่ซ่อนอยู่
-            </p>
-            <button class="glow-btn" onclick="startStory()">ก้าวเข้าสู่เรื่องราว</button>
+        <!-- Canvas for Animations -->
+        <canvas id="beachCanvas"></canvas>
+
+        <!-- UI Header & Footer -->
+        <div class="ui-layer" id="uiLayer" style="display: none;">
+            <header>
+                <div class="progress-badge" id="progressText">♡ ความทรงจำ 0/6</div>
+                <div class="music-btn" id="musicToggleBtn" onclick="toggleMusic()">♫</div>
+            </header>
+            <div class="bottom-hint" id="bottomHint">💡 แตะสำรวจวัตถุบนชายหาดหรือใช้นิ้วปัดซ้าย-ขวาเพื่อเดิน</div>
         </div>
 
-        <!-- --- CAMERA RIG & PARALLAX SCENE --- -->
-        <div id="camera-rig">
-            <!-- WORLD SCENE BACKGROUND -->
-            <div class="world-bg" id="worldBg"></div>
-
-            <!-- LAYER 1: City & Buildings (Parallax Slow) -->
-            <div class="parallax-layer" data-speed="0.2" style="transform: translateX(0px);">
-                <div class="city-layer">
-                    <!-- หน้าต่างห้องติดไฟอุ่นๆ -->
-                    <div class="building-window pulse-hint" style="top: 25%; left: 12%; width: 45px; height: 65px;" onclick="triggerObject('window')"></div>
-                    <div class="building-window" style="top: 35%; left: 32%; width: 35px; height: 50px;"></div>
-                    <div class="building-window" style="top: 20%; left: 58%; width: 40px; height: 60px;"></div>
-                    <!-- ร้านกาแฟ -->
-                    <div class="building-window pulse-hint" style="top: 40%; left: 78%; width: 70px; height: 45px; background: rgba(237,137,54,0.7);" onclick="triggerObject('cafe')"></div>
+        <!-- Memory Modal -->
+        <div id="memory-modal">
+            <div class="memory-card" id="memoryCardBox">
+                <div class="card-tape"></div>
+                <div class="card-title" id="modalTitle">ความทรงจำที่ 1</div>
+                <div class="card-img-container" id="modalImgContainer">
+                    <!-- รูปภาพหรือ placeholder -->
+                    <div class="placeholder-text" id="modalImgPlaceholder">รูปภาพความทรงจำ</div>
                 </div>
-            </div>
-
-            <!-- LAYER 2: Foreground Street & Interactive Objects (Parallax Normal) -->
-            <div class="parallax-layer" data-speed="0.5" style="transform: translateX(0px);">
-                <div class="road-layer"></div>
-
-                <!-- Paper Boat (Interactive Object 1) -->
-                <div id="paper-boat" class="pulse-hint" onclick="triggerObject('boat')" title="เรือกระดาษ">
-                    ⛵
-                </div>
-
-                <!-- Polaroid Photo on Ground (Interactive Object 2) -->
-                <div class="interactive-obj pulse-hint" style="bottom: 15%; left: 62%; width: 45px; height: 55px; background: #fdfbf7; border-radius: 2px; padding: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.6); transform: rotate(12deg);" onclick="triggerObject('photo')">
-                    <div style="width: 100%; height: 35px; background: #232d42; display:flex; align-items:center; justify-content:center; font-size:12px;">🖼️</div>
-                </div>
-
-                <!-- Envelope on Ground (Interactive Object 3) -->
-                <div class="interactive-obj pulse-hint" style="bottom: 12%; left: 88%; width: 50px; height: 35px; background: #f4eee1; border-radius: 3px; box-shadow: 0 4px 10px rgba(0,0,0,0.6);" onclick="triggerObject('letter')">
-                    <div style="font-size: 8px; color: #333; text-align: center; margin-top: 10px; font-weight: bold;">💌 จดหมาย</div>
-                </div>
+                <div class="card-message" id="modalMessage">กำลังโหลดข้อความ...</div>
+                <button class="close-card-btn" onclick="closeMemoryModal()">เก็บความทรงจำนี้ ♡</button>
             </div>
         </div>
 
-        <!-- --- STORY HUD DIALOGUE BOX --- -->
-        <div class="story-hud" id="storyHud">
-            <div class="story-hud-text" id="hudText">ข้อความเรื่องราว...</div>
-            <button class="story-hud-close" onclick="closeHud()">แตะเพื่อปิดและสำรวจต่อ ➔</button>
-        </div>
-
-        <!-- --- MODAL: POLAROID VIEW --- -->
-        <div class="modal-overlay" id="polaroidModal" onclick="closePolaroidModal()">
-            <div class="polaroid-card">
-                <div class="polaroid-img-box" id="polaroidEmoji">📸</div>
-                <div class="polaroid-caption" id="polaroidCaptionText">"จำวันนั้นได้ไหม..."</div>
-                <div style="font-size: 9px; color: #a0aec0; margin-top: 8px;">(แตะเพื่อปิด)</div>
-            </div>
-        </div>
-
-        <!-- --- MODAL: LETTER VIEW --- -->
-        <div class="modal-overlay" id="letterModal" onclick="closeLetterModal()">
-            <div class="letter-modal-box" onclick="event.stopPropagation()">
-                <p style="text-align: right; font-size: 0.8rem; color: #718096; margin-bottom: 8px;">ซองจดหมายสีเก่า</p>
-                <div class="letter-content" id="letterTypewriterBox"></div>
-                <div style="margin-top: 20px; text-align: right;">
-                    <button class="glow-btn" style="padding: 6px 18px; font-size: 0.85rem; margin:0;" onclick="closeLetterModal()">พับเก็บจดหมาย</button>
-                </div>
+        <!-- Final Scene Overlay -->
+        <div id="final-screen">
+            <div class="final-content">
+                <h2 id="finalText1">รู้ไหมที่เราทักไปหาแกก่อน<br>เพราะเราแอบชอบแก<br>ตั้งแต่สถานที่แรกกก</h2>
+                <p id="finalText2">ขอบคุณที่เข้ามาเป็นความทรงจำดีๆ ของเรานะ ♡<br><br><strong>สุขสันต์วันของเรา</strong></p>
+                <button class="start-btn" onclick="resetExperience()">เริ่มสำรวจใหม่อีกครั้ง</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- APP STATE ---
+        // ข้อมูลความทรงจำทั้ง 6 อัน (สามารถเปลี่ยนรูปภาพใน imagePath ได้ตามต้องการ)
+        const memoriesData = [
+            {
+                id: 1,
+                name: "ความทรงจำที่ 1",
+                x: 0.15, // ตำแหน่งตามแกน X ในโลก (0 ถึง 1)
+                objectType: "photo_sand",
+                imagePath: "", // ใส่ลิงก์รูปภาพจริงตรงนี้ได้ เช่น "assets/memory1.jpg"
+                message: "รู้ไหมที่เราทักไปหาแกก่อน\nเพราะเราแอบชอบแก"
+            },
+            {
+                id: 2,
+                name: "ความทรงจำที่ 2",
+                x: 0.32,
+                objectType: "minecraft_item",
+                imagePath: "",
+                message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔"
+            },
+            {
+                id: 3,
+                name: "ความทรงจำที่ 3",
+                x: 0.50,
+                objectType: "note_paper",
+                imagePath: "",
+                message: "นึกว่าพึ่งเป็นเด็กเอาแต่ใจ\nที่ไหนได้เอาแต่ใจตั้งนานแล้วว่ะ 😜"
+            },
+            {
+                id: 4,
+                name: "ความทรงจำที่ 4",
+                x: 0.68,
+                objectType: "camera_item",
+                imagePath: "",
+                message: "ตอนนี้ฉันถ่ายรูปให้แก\nอุส่าห์ตั้งใจถ่ายแนะ 📸"
+            },
+            {
+                id: 5,
+                name: "ความทรงจำที่ 5",
+                x: 0.85,
+                objectType: "phone_item",
+                imagePath: "",
+                message: "ยุ่ดีๆบอลก็ขอเค้าเป็นแฟน\nในขณะที่เล่นเกม และกำลังงอนกัน 😳"
+            },
+            {
+                id: 6,
+                name: "ความทรงจำที่ 6",
+                x: 1.05,
+                objectType: "letter_item",
+                imagePath: "",
+                message: "ขอบคุณนะ สำหรับทุกความทรงจำที่ผ่านมา\nทั้งเรื่องตลก เรื่องงอน เรื่องเล่นเกม เรื่องที่เราชอบแกล้งกัน\nเราจำได้หมดเลย ♡"
+            }
+        ];
+
+        let discovered = new Array(6).fill(false);
+        let currentOpenMemory = null;
         let isStarted = false;
-        let discoveredCount = 0;
-        const totalMemories = 4;
-        let discoveredFlags = { window: false, cafe: false, boat: false, photo: false, letter: false };
-        let currentCameraPos = 0; // ตำแหน่งกล้องปัจจุบัน (px)
+        let cameraX = 0;
+        let targetCameraX = 0;
+        let worldWidth = 2500; // ความกว้างของฉากจำลอง
 
-        // --- START STORY ---
-        function startStory() {
-            document.getElementById('intro-screen').classList.add('hide');
-            isStarted = true;
-            setTimeout(() => {
-                showHud("ข้างนอกฝนตกหนักเลย... ลองแตะสิ่งของในเมืองเพื่อค้นหาความรู้สึกที่ซ่อนอยู่");
-            }, 600);
-        }
-
-        // --- HUD CONTROLLER ---
-        function showHud(text) {
-            document.getElementById('hudText').innerText = text;
-            document.getElementById('storyHud').classList.add('show');
-        }
-
-        function closeHud() {
-            document.getElementById('storyHud').classList.remove('show');
-        }
-
-        // --- CAMERA PAN & PARALLAX SYSTEM ---
-        function panCameraTo(targetX) {
-            currentCameraPos = targetX;
-            const rig = document.getElementById('camera-rig');
-            rig.style.transform = `translateX(${targetX}px)`;
-
-            // Parallax calculation for layers
-            const layers = document.querySelectorAll('.parallax-layer');
-            layers.forEach(layer => {
-                const speed = parseFloat(layer.getAttribute('data-speed'));
-                layer.style.transform = `translateX(${-targetX * speed}px)`;
-            });
-        }
-
-        // --- OBJECT INTERACTION ROUTER ---
-        function triggerObject(type) {
-            if (!isStarted) return;
-
-            if (type === 'window') {
-                panCameraTo(0);
-                markDiscovered('window');
-                openPolaroid("🏠 หน้าต่างอุ่นๆ", "ฝนตกแบบนี้ เปียกหรือเปล่า อย่าลืมพกร่มนะ");
-            } else if (type === 'cafe') {
-                panCameraTo(-120);
-                markDiscovered('cafe');
-                openPolaroid("☕ ร้านกาแฟ", "รู้ไหม... ที่เราทักไปหาแกก่อน");
-            } else if (type === 'boat') {
-                panCameraTo(-60);
-                markDiscovered('boat');
-                openPolaroid("⛵ เรือกระดาษ", "เพราะเราแอบชอบแก...");
-            } else if (type === 'photo') {
-                panCameraTo(-180);
-                markDiscovered('photo');
-                openPolaroid("✨ รูปถ่ายความทรงจำ", "ตั้งแต่ครั้งแรกที่เจอเลยนะ");
-            } else if (type === 'letter') {
-                panCameraTo(-220);
-                markDiscovered('letter');
-                openLetterModal();
-            }
-        }
-
-        function markDiscovered(key) {
-            if (!discoveredFlags[key]) {
-                discoveredFlags[key] = true;
-                discoveredCount = Math.min(totalMemories, discoveredCount + 1);
-                document.getElementById('progressIndicator').innerText = `ความทรงจำ ${discoveredCount}/${totalMemories}`;
-
-                if (discoveredCount === totalMemories) {
-                    setTimeout(triggerFinalScene, 1800);
-                }
-            }
-        }
-
-        // --- MODAL POPUPS ---
-        function openPolaroid(emoji, caption) {
-            document.getElementById('polaroidEmoji').innerText = emoji;
-            document.getElementById('polaroidCaptionText').innerText = `"${caption}"`;
-            document.getElementById('polaroidModal').classList.add('show');
-        }
-        function closePolaroidModal() {
-            document.getElementById('polaroidModal').classList.remove('show');
-        }
-
-        const letterFullText = "ถึง เธอ...\n\nเราไม่รู้ว่าจะพูดยังไงดี\nแต่จริง ๆ แล้ว...\nเราแอบชอบแกมานานแล้วนะ ❤️";
-        function openLetterModal() {
-            document.getElementById('letterModal').classList.add('show');
-            startTypewriterLetter();
-        }
-        function closeLetterModal() {
-            document.getElementById('letterModal').classList.remove('show');
-            markDiscovered('letter');
-        }
-        function startTypewriterLetter() {
-            const box = document.getElementById('letterTypewriterBox');
-            box.innerHTML = "";
-            let idx = 0;
-            function type() {
-                if (idx < letterFullText.length) {
-                    box.innerHTML += letterFullText.charAt(idx) === '\n' ? '<br>' : letterFullText.charAt(idx);
-                    idx++;
-                    setTimeout(type, 60);
-                }
-            }
-            type();
-        }
-
-        // --- FINAL SCENE (SUNSET TRANSITION) ---
-        function triggerFinalScene() {
-            document.getElementById('worldBg').classList.add('sunset');
-            setTimeout(() => {
-                showHud("ฝนหยุดแล้ว... ท้องฟ้าเปลี่ยนเป็นสีอุ่น ความรู้สึกทั้งหมดชัดเจนขึ้นแล้ว ❤️");
-            }, 1200);
-        }
-
-        // --- CONTINUOUS LIVE CANVAS ANIMATION (RAIN, RIPPLES & PARTICLES) ---
-        const canvas = document.getElementById('liveCanvas');
+        // Canvas Setup
+        const canvas = document.getElementById('beachCanvas');
         const ctx = canvas.getContext('2d');
+        let width, height;
 
         function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
+            width = canvas.width = window.innerWidth > 480 ? 480 : window.innerWidth;
+            height = canvas.height = window.innerHeight;
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Rain particles
-        let raindrops = [];
-        const maxDrops = 80;
-        for (let i = 0; i < maxDrops; i++) {
-            raindrops.push({
-                x: Math.random() * canvas.width * 1.5,
-                y: Math.random() * canvas.height,
-                length: Math.random() * 20 + 10,
-                speed: Math.random() * 8 + 7,
-                opacity: Math.random() * 0.4 + 0.15
+        // Particles & Waves simulation variables
+        let particles = [];
+        for(let i=0; i<40; i++) {
+            particles.push({
+                x: Math.random() * worldWidth,
+                y: Math.random() * height * 0.6 + height * 0.3,
+                size: Math.random() * 2 + 1,
+                speedX: Math.random() * 0.5 + 0.2,
+                speedY: (Math.random() - 0.5) * 0.2,
+                opacity: Math.random() * 0.5 + 0.3
             });
         }
 
-        // Water ripples on ground road
-        let ripples = [];
-        function addRipple() {
-            if (ripples.length < 15) {
-                ripples.push({
-                    x: Math.random() * canvas.width,
-                    y: canvas.height * 0.78 + Math.random() * (canvas.height * 0.2),
-                    radius: 2,
-                    maxRadius: Math.random() * 15 + 10,
-                    opacity: 0.6
-                });
-            }
+        function startExperience() {
+            isStarted = true;
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('uiLayer').style.display = 'flex';
+            initAudio();
+            requestAnimationFrame(gameLoop);
         }
-        setInterval(addRipple, 400);
 
-        function animateWorld() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Touch & Drag handling for camera panning
+        let isDragging = false;
+        let startX = 0;
 
-            // 1. Draw Rain
-            ctx.lineWidth = 1.2;
-            for (let drop of raindrops) {
-                ctx.strokeStyle = `rgba(180, 215, 250, ${drop.opacity})`;
-                ctx.beginPath();
-                ctx.moveTo(drop.x, drop.y);
-                ctx.lineTo(drop.x - 0.6, drop.y + drop.length);
-                ctx.stroke();
+        window.addEventListener('touchstart', (e) => {
+            if(!isStarted) return;
+            isDragging = true;
+            startX = e.touches[0].clientX;
+        });
 
-                drop.y += drop.speed;
-                drop.x -= 0.3;
+        window.addEventListener('touchmove', (e) => {
+            if(!isDragging || !isStarted) return;
+            let dx = e.touches[0].clientX - startX;
+            startX = e.touches[0].clientX;
+            targetCameraX -= dx * 1.5;
+            clampCamera();
+        });
 
-                if (drop.y > canvas.height) {
-                    drop.y = -20;
-                    drop.x = Math.random() * canvas.width * 1.5;
-                }
-            }
+        window.addEventListener('touchend', () => { isDragging = false; });
 
-            // 2. Draw Ripples on road
-            for (let i = ripples.length - 1; i >= 0; i--) {
-                let r = ripples[i];
-                ctx.strokeStyle = `rgba(246, 173, 85, ${r.opacity * 0.4})`;
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.ellipse(r.x, r.y, r.radius, r.radius * 0.4, 0, 0, Math.PI * 2);
-                ctx.stroke();
+        window.addEventListener('mousedown', (e) => {
+            if(!isStarted) return;
+            isDragging = true;
+            startX = e.clientX;
+        });
+        window.addEventListener('mousemove', (e) => {
+            if(!isDragging || !isStarted) return;
+            let dx = e.clientX - startX;
+            startX = e.clientX;
+            targetCameraX -= dx * 1.5;
+            clampCamera();
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; });
 
-                r.radius += 0.4;
-                r.opacity -= 0.02;
-
-                if (r.opacity <= 0 || r.radius >= r.maxRadius) {
-                    ripples.splice(i, 1);
-                }
-            }
-
-            requestAnimationFrame(animateWorld);
+        function clampCamera() {
+            let maxScroll = worldWidth - width;
+            if(targetCameraX < 0) targetCameraX = 0;
+            if(targetCameraX > maxScroll) targetCameraX = maxScroll;
         }
-        animateWorld();
 
-        // --- AUDIO AMBIENCE SIMULATOR (Web Audio API) ---
+        // Web Audio background generator (simulate music loop if no file)
         let audioCtx = null;
-        let noiseNode = null;
-        let isAudioPlaying = false;
+        let musicPlaying = false;
+        let oscillator = null;
 
-        function toggleAudio() {
-            const btn = document.getElementById('audioToggleBtn');
-            if (!isAudioPlaying) {
-                try {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    const bufferSize = audioCtx.sampleRate * 2;
-                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                    const data = buffer.getChannelData(0);
-                    for (let i = 0; i < bufferSize; i++) {
-                        data[i] = Math.random() * 2 - 1;
+        function initAudio() {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                playSynthMusic();
+                musicPlaying = true;
+            } catch(e) {
+                console.log("Audio not supported");
+            }
+        }
+
+        function playSynthMusic() {
+            if(!audioCtx) return;
+            if(oscillator) {
+                try { oscillator.stop(); } catch(e){}
+            }
+            // สร้างทำนองเพลงบรรเลงคลอเบา ๆ (Lullaby/Romantic tone)
+            oscillator = audioCtx.createOscillator();
+            let gainNode = audioCtx.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(329.63, audioCtx.currentTime); // E4 note
+            gainNode.gain.setValueAtTime(0.03, audioCtx.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+        }
+
+        function toggleMusic() {
+            const btn = document.getElementById('musicToggleBtn');
+            if(musicPlaying) {
+                if(audioCtx) audioCtx.suspend();
+                btn.innerText = "❚❚";
+                musicPlaying = false;
+            } else {
+                if(audioCtx) audioCtx.resume();
+                btn.innerText = "♫";
+                musicPlaying = true;
+            }
+        }
+
+        // Main Loop
+        let time = 0;
+        function gameLoop() {
+            if(!isStarted) return;
+            time += 0.02;
+
+            // Smooth camera lerp
+            cameraX += (targetCameraX - cameraX) * 0.1;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // 1. Draw Sunset Sky Gradient
+            let skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.55);
+            skyGrad.addColorStop(0, '#1e1b4b');
+            skyGrad.addColorStop(0.3, '#701a75');
+            skyGrad.addColorStop(0.6, '#db2777');
+            skyGrad.addColorStop(0.85, '#ea580c');
+            skyGrad.addColorStop(1, '#fde047');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, width, height * 0.55);
+
+            // Sun
+            let sunX = width * 0.5 - (cameraX * 0.2);
+            let sunY = height * 0.45;
+            let sunGrad = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, 80);
+            sunGrad.addColorStop(0, 'rgba(255, 255, 200, 0.9)');
+            sunGrad.addColorStop(0.5, 'rgba(251, 191, 36, 0.5)');
+            sunGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath();
+            ctx.arc(sunX, sunY, 80, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 2. Draw Sea & Waves
+            let seaY = height * 0.55;
+            let seaGrad = ctx.createLinearGradient(0, seaY, 0, height * 0.75);
+            seaGrad.addColorStop(0, '#c2410c');
+            seaGrad.addColorStop(0.5, '#0369a1');
+            seaGrad.addColorStop(1, '#0c4a6e');
+            ctx.fillStyle = seaGrad;
+            ctx.fillRect(0, seaY, width, height * 0.2);
+
+            // Animated Waves lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            for(let i=0; i<4; i++) {
+                ctx.beginPath();
+                let waveY = seaY + i * 20 + Math.sin(time + i) * 5;
+                for(let x=0; x<=width; x+=10) {
+                    let wy = waveY + Math.sin(x * 0.02 + time * 2 + i) * 4;
+                    if(x === 0) ctx.moveTo(x, wy);
+                    else ctx.lineTo(x, wy);
+                }
+                ctx.stroke();
+            }
+
+            // 3. Draw Beach Sand (Foreground)
+            let sandY = height * 0.72;
+            let sandGrad = ctx.createLinearGradient(0, sandY, 0, height);
+            sandGrad.addColorStop(0, '#fde68a');
+            sandGrad.addColorStop(0.3, '#fcd34d');
+            sandGrad.addColorStop(1, '#d97706');
+            ctx.fillStyle = sandGrad;
+            ctx.beginPath();
+            ctx.moveTo(0, sandY);
+            ctx.bezierCurveTo(width * 0.3, sandY - 15, width * 0.7, sandY + 15, width, sandY);
+            ctx.lineTo(width, height);
+            ctx.lineTo(0, height);
+            ctx.closePath();
+            ctx.fill();
+
+            // Particles blowing in wind
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            particles.forEach(p => {
+                let screenX = p.x - cameraX;
+                if(screenX >= -10 && screenX <= width + 10) {
+                    ctx.beginPath();
+                    ctx.arc(screenX, p.y + Math.sin(time + p.x) * 3, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                p.x -= p.speedX;
+                if(p.x < 0) p.x = worldWidth;
+            });
+
+            // 4. Render Hidden Memories in the Scene
+            memoriesData.forEach((mem, index) => {
+                let worldObjX = mem.x * worldWidth;
+                let screenObjX = worldObjX - cameraX;
+                let objY = height * 0.82 + Math.sin(time * 2 + index) * 4;
+
+                if(screenObjX >= -50 && screenObjX <= width + 50) {
+                    // Draw glowing indicator if not discovered
+                    ctx.save();
+                    ctx.translate(screenObjX, objY);
+
+                    if(!discovered[index]) {
+                        // Pulsing glow
+                        let glow = Math.sin(time * 4) * 5 + 10;
+                        ctx.shadowColor = '#f43f5e';
+                        ctx.shadowBlur = glow;
                     }
 
-                    noiseNode = audioCtx.createBufferSource();
-                    noiseNode.buffer = buffer;
-                    noiseNode.loop = true;
+                    // Draw item icon on sand
+                    ctx.fillStyle = discovered[index] ? '#94a3b8' : '#e11d48';
+                    ctx.beginPath();
+                    ctx.roundRect(-20, -25, 40, 35, 6);
+                    ctx.fill();
 
-                    const filter = audioCtx.createBiquadFilter();
-                    filter.type = 'lowpass';
-                    filter.frequency.value = 600;
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '14px "Itim", cursive';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`♡ ${index+1}`, 0, -3);
 
-                    const gain = audioCtx.createGain();
-                    gain.gain.value = 0.12;
-
-                    noiseNode.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(audioCtx.destination);
-
-                    noiseNode.start();
-                    isAudioPlaying = true;
-                    btn.innerText = "🔇 ปิดเสียงฝน";
-                } catch(e) {
-                    console.log("Audio Context blocked", e);
+                    ctx.restore();
                 }
+            });
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Click / Tap detection to open memories
+        canvas.addEventListener('click', (e) => {
+            if(!isStarted) return;
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            memoriesData.forEach((mem, index) => {
+                let worldObjX = mem.x * worldWidth;
+                let screenObjX = worldObjX - cameraX;
+                let objY = height * 0.82;
+
+                // Check hit box
+                if(Math.abs(clickX - screenObjX) < 35 && Math.abs(clickY - objY) < 35) {
+                    openMemory(index);
+                }
+            });
+        });
+
+        function openMemory(index) {
+            currentOpenMemory = index;
+            discovered[index] = true;
+
+            // Update Progress UI
+            let count = discovered.filter(Boolean).length;
+            document.getElementById('progressText').innerText = `♡ ความทรงจำ ${count}/6`;
+
+            // Populate Modal Content
+            const mem = memoriesData[index];
+            document.getElementById('modalTitle').innerText = mem.name;
+            document.getElementById('modalMessage').innerText = mem.message;
+
+            const imgContainer = document.getElementById('modalImgContainer');
+            if(mem.imagePath) {
+                imgContainer.innerHTML = `<img src="${mem.imagePath}" alt="${mem.name}">`;
             } else {
-                if (noiseNode) noiseNode.stop();
-                if (audioCtx) audioCtx.close();
-                isAudioPlaying = false;
-                btn.innerText = "🔊 เสียงฝน";
+                imgContainer.innerHTML = `<div class="placeholder-text">รูปภาพความทรงจำที่ ${index + 1}<br><span style="font-size:12px; color:#cbd5e1;">(แทนที่รูปจริงได้ในอาเรย์ memoriesData)</span></div>`;
             }
+
+            document.getElementById('memory-modal').classList.add('show');
+
+            // Check if all discovered
+            if(count === 6) {
+                setTimeout(() => {
+                    checkFinalCompletion();
+                }, 1000);
+            }
+        }
+
+        function closeMemoryModal() {
+            document.getElementById('memory-modal').classList.remove('show');
+            currentOpenMemory = null;
+        }
+
+        function checkFinalCompletion() {
+            document.getElementById('final-screen').classList.add('show');
+        }
+
+        function resetExperience() {
+            discovered.fill(false);
+            document.getElementById('final-screen').classList.remove('show');
+            document.getElementById('progressText').innerText = `♡ ความทรงจำ 0/6`;
+            targetCameraX = 0;
         }
     </script>
 </body>
