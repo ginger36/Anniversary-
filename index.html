@@ -1,1 +1,625 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ปลายฝนต้นหนาว - ความทรงจำของเรา ♡</title>
+    <link href="https://fonts.googleapis.com/css2?family=Itim&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Itim', 'Sarabun', cursive, sans-serif;
+            background: #fef2f2;
+            color: #475569;
+        }
+        #app-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(244, 114, 182, 0.2);
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            z-index: 10;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .progress-badge {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 182, 193, 0.5);
+            color: #db2777;
+            box-shadow: 0 4px 12px rgba(251, 207, 232, 0.5);
+        }
+        .music-btn {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 182, 193, 0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #db2777;
+            font-size: 18px;
+            cursor: pointer;
+            pointer-events: auto;
+            box-shadow: 0 4px 12px rgba(251, 207, 232, 0.5);
+            transition: transform 0.2s;
+        }
+        .music-btn:active { transform: scale(0.9); }
 
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #fdf2f8, #fce7f3, #fed7aa);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 30px;
+            text-align: center;
+        }
+        #start-screen h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: #e11d48;
+            text-shadow: 0 2px 10px rgba(244, 63, 94, 0.2);
+        }
+        #start-screen p {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .start-btn {
+            background: linear-gradient(135deg, #fb7185, #f43f5e);
+            color: white;
+            border: none;
+            padding: 14px 36px;
+            font-size: 18px;
+            font-family: 'Itim', cursive;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(244, 63, 94, 0.35);
+            transition: transform 0.2s;
+            pointer-events: auto;
+        }
+        .start-btn:active { transform: scale(0.95); }
+
+        .bottom-hint {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(6px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #db2777;
+            border: 1px solid rgba(255, 182, 193, 0.4);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            animation: pulseHint 2s infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes pulseHint {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        #memory-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #memory-modal.show { display: flex; opacity: 1; }
+        .memory-card {
+            background: #fff;
+            color: #334155;
+            width: 100%;
+            max-width: 340px;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 15px 35px rgba(244, 63, 94, 0.15);
+            position: relative;
+            transform: scale(0.8) rotate(-2deg);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+            border: 1px solid #fbcfe8;
+        }
+        #memory-modal.show .memory-card { transform: scale(1) rotate(0deg); }
+        .card-tape {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 24px;
+            background: rgba(254, 205, 211, 0.8);
+            border: 1px dashed rgba(244, 63, 94, 0.3);
+            border-radius: 4px;
+        }
+        .card-title { font-size: 20px; font-weight: bold; color: #e11d48; margin-bottom: 12px; text-align: center; }
+        .card-img-container {
+            width: 100%;
+            height: 190px;
+            background: #fff1f2;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            border: 1px dashed #fbcfe8;
+        }
+        .card-img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .placeholder-text { color: #f43f5e; font-size: 14px; text-align: center; padding: 10px; }
+        .card-message { font-size: 16px; line-height: 1.6; color: #475569; min-height: 60px; text-align: center; white-space: pre-line; margin-bottom: 20px; }
+        .close-card-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #fb7185, #f43f5e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Itim', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+            transition: transform 0.2s;
+        }
+        .close-card-btn:active { transform: scale(0.97); }
+
+        #final-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(253, 242, 248, 0.95);
+            backdrop-filter: blur(8px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 60;
+            padding: 30px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        #final-screen.show { display: flex; opacity: 1; }
+        .final-content h2 { font-size: 26px; color: #e11d48; margin-bottom: 15px; line-height: 1.4; }
+        .final-content p { font-size: 18px; color: #64748b; line-height: 1.6; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <!-- Start Screen -->
+        <div id="start-screen">
+            <h1>ปลายฝนต้นหนาว ♡</h1>
+            <p>เดินเล่นริมชายหาดพาสเทลกับน้องหมาปุยสีขาวนวล<br>เพื่อค้นหาความทรงจำ 6 อย่างกันนะ...</p>
+            <button class="start-btn" onclick="startExperience()">เริ่มต้นเรื่องราว</button>
+        </div>
+
+        <canvas id="beachCanvas"></canvas>
+
+        <div class="ui-layer" id="uiLayer" style="display: none;">
+            <header>
+                <div class="progress-badge" id="progressText">♡ ความทรงจำ 0/6</div>
+                <div class="music-btn" id="musicToggleBtn" onclick="toggleMusic()">♫</div>
+            </header>
+            <div class="bottom-hint" id="bottomHint">💡 ลากนิ้วซ้าย-ขวาเพื่อเดินเล่น และแตะความทรงจำบนหาดทราย</div>
+        </div>
+
+        <!-- Memory Modal -->
+        <div id="memory-modal">
+            <div class="memory-card">
+                <div class="card-tape"></div>
+                <div class="card-title" id="modalTitle">ความทรงจำที่ 1</div>
+                <div class="card-img-container" id="modalImgContainer">
+                    <div class="placeholder-text" id="modalImgPlaceholder">รูปภาพความทรงจำ</div>
+                </div>
+                <div class="card-message" id="modalMessage">กำลังโหลดข้อความ...</div>
+                <button class="close-card-btn" onclick="closeMemoryModal()">เก็บความทรงจำนี้ ♡</button>
+            </div>
+        </div>
+
+        <!-- Final Screen -->
+        <div id="final-screen">
+            <div class="final-content">
+                <h2>รู้ไหมที่เราทักไปหาแกก่อน<br>เพราะเราแอบชอบแก<br>ตั้งแต่สถานที่แรกกก</h2>
+                <p>ขอบคุณที่เข้ามาเป็นความทรงจำดีๆ ของเรานะ ♡<br><br><strong>สุขสันต์วันของเรา</strong></p>
+                <button class="start-btn" onclick="resetExperience()">เริ่มสำรวจใหม่อีกครั้ง</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const memoriesData = [
+            { id: 1, name: "ความทรงจำที่ 1", x: 0.15, imagePath: "", message: "รู้ไหมที่เราทักไปหาแกก่อน\nเพราะเราแอบชอบแก" },
+            { id: 2, name: "ความทรงจำที่ 2", x: 0.32, imagePath: "", message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔" },
+            { id: 3, name: "ความทรงจำที่ 3", x: 0.50, imagePath: "", message: "นึกว่าพึ่งเป็นเด็กเอาแต่ใจ\nที่ไหนได้เอาแต่ใจตั้งนานแล้วว่ะ 😜" },
+            { id: 4, name: "ความทรงจำที่ 4", x: 0.68, imagePath: "", message: "ตอนนี้ฉันถ่ายรูปให้แก\nอุส่าห์ตั้งใจถ่ายแนะ 📸" },
+            { id: 5, name: "ความทรงจำที่ 5", x: 0.85, imagePath: "", message: "ยุ่ดีๆบอลก็ขอเค้าเป็นแฟน\nในขณะที่เล่นเกม และกำลังงอนกัน 😳" },
+            { id: 6, name: "ความทรงจำที่ 6", x: 1.05, imagePath: "", message: "ขอบคุณนะ สำหรับทุกความทรงจำที่ผ่านมา\nทั้งเรื่องตลก เรื่องงอน เรื่องเล่นเกม เรื่องที่เราชอบแกล้งกัน\nเราจำได้หมดเลย ♡" }
+        ];
+
+        let discovered = new Array(6).fill(false);
+        let isStarted = false;
+        let cameraX = 0;
+        let targetCameraX = 0;
+        let worldWidth = 3000;
+        let dogX = 180;
+
+        const canvas = document.getElementById('beachCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth > 480 ? 480 : window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let particles = [];
+        for(let i=0; i<40; i++) {
+            particles.push({
+                x: Math.random() * worldWidth,
+                y: Math.random() * height * 0.5 + height * 0.25,
+                size: Math.random() * 2 + 1,
+                speedX: Math.random() * 0.4 + 0.2,
+                opacity: Math.random() * 0.4 + 0.2
+            });
+        }
+
+        function startExperience() {
+            isStarted = true;
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('uiLayer').style.display = 'flex';
+            initAudio();
+            requestAnimationFrame(gameLoop);
+        }
+
+        let isDragging = false;
+        let startX = 0;
+
+        window.addEventListener('touchstart', (e) => {
+            if(!isStarted) return;
+            isDragging = true;
+            startX = e.touches[0].clientX;
+        });
+        window.addEventListener('touchmove', (e) => {
+            if(!isDragging || !isStarted) return;
+            let dx = e.touches[0].clientX - startX;
+            startX = e.touches[0].clientX;
+            targetCameraX -= dx * 1.8;
+            clampCamera();
+        });
+        window.addEventListener('touchend', () => { isDragging = false; });
+
+        window.addEventListener('mousedown', (e) => {
+            if(!isStarted) return;
+            isDragging = true;
+            startX = e.clientX;
+        });
+        window.addEventListener('mousemove', (e) => {
+            if(!isDragging || !isStarted) return;
+            let dx = e.clientX - startX;
+            startX = e.clientX;
+            targetCameraX -= dx * 1.8;
+            clampCamera();
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        function clampCamera() {
+            let maxScroll = worldWidth - width;
+            if(targetCameraX < 0) targetCameraX = 0;
+            if(targetCameraX > maxScroll) targetCameraX = maxScroll;
+        }
+
+        let audioCtx = null;
+        let musicPlaying = false;
+        let oscillator = null;
+
+        function initAudio() {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                oscillator = audioCtx.createOscillator();
+                let gainNode = audioCtx.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(329.63, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                musicPlaying = true;
+            } catch(e) {}
+        }
+
+        function toggleMusic() {
+            const btn = document.getElementById('musicToggleBtn');
+            if(musicPlaying) {
+                if(audioCtx) audioCtx.suspend();
+                btn.innerText = "❚❚";
+                musicPlaying = false;
+            } else {
+                if(audioCtx) audioCtx.resume();
+                btn.innerText = "♫";
+                musicPlaying = true;
+            }
+        }
+
+        let time = 0;
+        function gameLoop() {
+            if(!isStarted) return;
+            time += 0.02;
+
+            cameraX += (targetCameraX - cameraX) * 0.08;
+
+            // Dog moves smoothly toward target position as memories are found
+            let count = discovered.filter(Boolean).length;
+            let targetDogWorldX = 180 + (count / 6) * (worldWidth - 500);
+            dogX += (targetDogWorldX - dogX) * 0.05;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Pastel Sunset Sky Gradient (Soft & Warm)
+            let progressRatio = cameraX / (worldWidth - width);
+            let skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.55);
+            
+            if(progressRatio < 0.5) {
+                skyGrad.addColorStop(0, '#fbcfe8'); // Pastel Pink
+                skyGrad.addColorStop(0.4, '#fed7aa'); // Pastel Peach
+                skyGrad.addColorStop(0.8, '#fef08a'); // Soft Yellow
+                skyGrad.addColorStop(1, '#bae6fd'); // Soft Sky Blue
+            } else {
+                skyGrad.addColorStop(0, '#f472b6');
+                skyGrad.addColorStop(0.4, '#c084fc');
+                skyGrad.addColorStop(0.8, '#818cf8');
+                skyGrad.addColorStop(1, '#38bdf8');
+            }
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, width, height * 0.55);
+
+            // Soft Glowing Sun
+            let sunX = width * 0.6 - (cameraX * 0.15);
+            let sunY = height * 0.4;
+            let sunGrad = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, 65);
+            sunGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+            sunGrad.addColorStop(0.5, 'rgba(254, 215, 170, 0.6)');
+            sunGrad.addColorStop(1, 'rgba(254, 215, 170, 0)');
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath();
+            ctx.arc(sunX, sunY, 65, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pastel Sea & Waves
+            let seaY = height * 0.55;
+            let seaGrad = ctx.createLinearGradient(0, seaY, 0, height * 0.75);
+            seaGrad.addColorStop(0, '#f43f5e');
+            seaGrad.addColorStop(0.4, '#38bdf8');
+            seaGrad.addColorStop(1, '#0284c7');
+            ctx.fillStyle = seaGrad;
+            ctx.fillRect(0, seaY, width, height * 0.2);
+
+            // Gentle Waves
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 2;
+            for(let i=0; i<3; i++) {
+                ctx.beginPath();
+                let waveY = seaY + i * 22 + Math.sin(time + i) * 4;
+                for(let x=0; x<=width; x+=10) {
+                    let wy = waveY + Math.sin(x * 0.02 + time * 2 + i) * 3;
+                    if(x === 0) ctx.moveTo(x, wy);
+                    else ctx.lineTo(x, wy);
+                }
+                ctx.stroke();
+            }
+
+            // Pastel Sand (Warm & Soft)
+            let sandY = height * 0.72;
+            let sandGrad = ctx.createLinearGradient(0, sandY, 0, height);
+            sandGrad.addColorStop(0, '#fef08a');
+            sandGrad.addColorStop(0.3, '#fde68a');
+            sandGrad.addColorStop(1, '#fbbf24');
+            ctx.fillStyle = sandGrad;
+            ctx.beginPath();
+            ctx.moveTo(0, sandY);
+            ctx.bezierCurveTo(width * 0.3, sandY - 12, width * 0.7, sandY + 12, width, sandY);
+            ctx.lineTo(width, height);
+            ctx.lineTo(0, height);
+            ctx.closePath();
+            ctx.fill();
+
+            // Soft floating light particles
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            particles.forEach(p => {
+                let screenX = p.x - cameraX;
+                if(screenX >= -10 && screenX <= width + 10) {
+                    ctx.beginPath();
+                    ctx.arc(screenX, p.y + Math.sin(time + p.x) * 3, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                p.x -= p.speedX;
+                if(p.x < 0) p.x = worldWidth;
+            });
+
+            // Cute Fluffy Pastel Dog 🐶 (Soft cream/white color)
+            let dogScreenX = dogX - cameraX;
+            if(dogScreenX >= -60 && dogScreenX <= width + 60) {
+                ctx.save();
+                ctx.translate(dogScreenX, height * 0.78);
+                let bounce = Math.abs(Math.sin(time * 8)) * 3;
+                ctx.translate(0, -bounce);
+
+                // Body (Cream/White fluffy color)
+                ctx.fillStyle = '#fef08a';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 16, 11, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Head
+                ctx.beginPath();
+                ctx.arc(12, -7, 9, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Ears (Cute floppy ear)
+                ctx.fillStyle = '#fde047';
+                ctx.beginPath();
+                ctx.arc(8, -12, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Happy Tail wagging
+                ctx.strokeStyle = '#fde047';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(-15, -3);
+                ctx.quadraticCurveTo(-24, -12 + Math.sin(time * 14) * 6, -20, -18);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            // Render Memories items (Pastel styled)
+            memoriesData.forEach((mem, index) => {
+                let worldObjX = mem.x * worldWidth;
+                let screenObjX = worldObjX - cameraX;
+                let objY = height * 0.82 + Math.sin(time * 2 + index) * 3;
+
+                if(screenObjX >= -50 && screenObjX <= width + 50) {
+                    ctx.save();
+                    ctx.translate(screenObjX, objY);
+
+                    if(!discovered[index]) {
+                        let glow = Math.sin(time * 4) * 6 + 8;
+                        ctx.shadowColor = '#fb7185';
+                        ctx.shadowBlur = glow;
+                    }
+
+                    ctx.fillStyle = discovered[index] ? '#cbd5e1' : '#fb7185';
+                    ctx.beginPath();
+                    ctx.roundRect(-22, -26, 44, 38, 10);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '15px "Itim", cursive';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`♡ ${index+1}`, 0, -3);
+
+                    ctx.restore();
+                }
+            });
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            if(!isStarted) return;
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            memoriesData.forEach((mem, index) => {
+                let worldObjX = mem.x * worldWidth;
+                let screenObjX = worldObjX - cameraX;
+                let objY = height * 0.82;
+
+                if(Math.abs(clickX - screenObjX) < 40 && Math.abs(clickY - objY) < 40) {
+                    openMemory(index);
+                }
+            });
+        });
+
+        function openMemory(index) {
+            discovered[index] = true;
+            let count = discovered.filter(Boolean).length;
+            document.getElementById('progressText').innerText = `♡ ความทรงจำ ${count}/6`;
+
+            const mem = memoriesData[index];
+            document.getElementById('modalTitle').innerText = mem.name;
+            document.getElementById('modalMessage').innerText = mem.message;
+
+            const imgContainer = document.getElementById('modalImgContainer');
+            if(mem.imagePath) {
+                imgContainer.innerHTML = `<img src="${mem.imagePath}" alt="${mem.name}">`;
+            } else {
+                imgContainer.innerHTML = `<div class="placeholder-text">รูปภาพความทรงจำที่ ${index + 1}<br><span style="font-size:12px; color:#fb7185;">(ใส่รูปจริงใน memoriesData ได้เลย)</span></div>`;
+            }
+
+            document.getElementById('memory-modal').classList.add('show');
+
+            if(count === 6) {
+                setTimeout(() => {
+                    document.getElementById('final-screen').classList.add('show');
+                }, 1200);
+            }
+        }
+
+        function closeMemoryModal() {
+            document.getElementById('memory-modal').classList.remove('show');
+        }
+
+        function resetExperience() {
+            discovered.fill(false);
+            document.getElementById('final-screen').classList.remove('show');
+            document.getElementById('progressText').innerText = `♡ ความทรงจำ 0/6`;
+            targetCameraX = 0;
+            dogX = 180;
+        }
+    </script>
+</body>
+</html>
