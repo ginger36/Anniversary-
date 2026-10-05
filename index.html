@@ -264,7 +264,7 @@
             <div class="bottom-hint" id="bottomHint">💡 แตะที่ "ดาวทะเลระยิบระยับ" บนหาดทรายเพื่อเก็บความทรงจำ</div>
         </div>
 
-        <!-- Hidden YouTube Audio Player -->
+        <!-- Hidden YouTube Audio Player (เพลงปลายฝนต้นหนาวตามขอ) -->
         <div id="youtube-player-container" style="display:none;">
             <iframe id="yt-player" width="200" height="200" src="https://www.youtube.com/embed/faccKGHl5jM?enablejsapi=1&autoplay=1&loop=1&playlist=faccKGHl5jM" frameborder="0"></iframe>
         </div>
@@ -282,24 +282,30 @@
             </div>
         </div>
 
-        <!-- Final Screen -->
+        <!-- Final Screen (การ์ดตอนท้าย ธีมพระอาทิตย์ตกและทะเล) -->
         <div id="final-screen">
-            <div class="final-content">
-                <h2>รู้ไหมที่เราทักไปหาแกก่อน<br>เพราะเราแอบชอบแก<br>ตั้งแต่สถานที่แรกกก</h2>
-                <p>ขอบคุณที่เข้ามาเป็นความทรงจำดีๆ ของเรานะ ♡<br><br><strong>สุขสันต์วันของเรา</strong></p>
+            <div class="final-content" style="background: linear-gradient(135deg, #fff1f2, #ffedd5); padding: 24px; border-radius: 20px; border: 1px solid #fbcfe8; box-shadow: 0 15px 35px rgba(244,63,94,0.15);">
+                <h2 style="color: #e11d48; font-size: 24px;">🌅 ปลายฝนต้นหนาว 🌊</h2>
+                <p style="font-size: 16px; color: #475569; margin-top: 10px;">
+                    ขอบคุณที่เดินเคียงข้างกันมาจนครบทุกความทรงจำนะ<br>
+                    แสงพระอาทิตย์ตกดินและเกลียวคลื่นทะเลวันนี้<br>
+                    สวยงามที่สุดก็เพราะมีแกอยู่ด้วยกันตรงนี้ ♡<br><br>
+                    <strong>รักแกเสมอนะ</strong>
+                </p>
                 <button class="start-btn" onclick="resetExperience()">เริ่มสำรวจใหม่อีกครั้ง</button>
             </div>
         </div>
     </div>
 
     <script>
+        // ข้อมูลความทรงจำทั้ง 6 จุด
         const memoriesData = [
             { id: 1, name: "ความทรงจำที่ 1", x: 0.15, imagePath: "", message: "รู้ไหมที่เราทักไปหาแกก่อน\nเพราะเราแอบชอบแก" },
-            { id: 2, name: "ความทรงจำที่ 2", x: 0.32, imagePath: "image_2.png", message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔" }, //[span_0](start_span)[span_0](end_span)
+            { id: 2, name: "ความทรงจำที่ 2", x: 0.32, imagePath: "image_2.png", message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔" },
             { id: 3, name: "ความทรงจำที่ 3", x: 0.50, imagePath: "", message: "นึกว่าพึ่งเป็นเด็กเอาแต่ใจ\nที่ไหนได้เอาแต่ใจตั้งนานแล้วว่ะ 😜" },
             { id: 4, name: "ความทรงจำที่ 4", x: 0.68, imagePath: "", message: "ตอนนี้ฉันถ่ายรูปให้แก\nอุส่าห์ตั้งใจถ่ายแนะ 📸" },
             { id: 5, name: "ความทรงจำที่ 5", x: 0.85, imagePath: "", message: "ยุ่ดีๆบอลก็ขอเค้าเป็นแฟน\nในขณะที่เล่นเกม และกำลังงอนกัน 😳" },
-            { id: 6, name: "ความทรงจำที่ 6", x: 1.02, imagePath: "", message: "ขอบคุณนะ สำหรับทุกความทรงจำที่ผ่านมา\nทั้งเรื่องตลก เรื่องงอน เรื่องเล่นเกม เรื่องที่เราชอบแกล้งกัน\nเราจำได้หมดเลย ♡" }
+            { id: 6, name: "ความทรงจำที่ 6", x: 1.02, imagePath: "", message: "ปลายฝนต้นหนาวนี้...\nขอบคุณนะสำหรับทุกความทรงจำดีๆ ที่เรามีให้กัน ♡" }
         ];
 
         let discovered = new Array(6).fill(false);
@@ -364,7 +370,7 @@
 
             cameraX += (targetCameraX - cameraX) * 0.08;
 
-            // แก้ไขระบบคำนวณตำแหน่งน้องหมาให้เดินตามความทรงจำแต่ละจุดได้อย่างสมูท
+            // คำนวณตำแหน่งน้องหมาให้เดินตามความทรงจำทีละจุดอย่างแม่นยำ
             let count = discovered.filter(Boolean).length;
             let targetDogWorldX = 150 + (count / 6) * (memoriesData[5].x * worldWidth - 100);
             dogX += (targetDogWorldX - dogX) * 0.06;
@@ -447,7 +453,7 @@
                 if(p.x < 0) p.x = worldWidth;
             });
 
-            // 4. น้องหมาสุดน่ารักตัวเด่นเดินไปตามทาง
+            // 4. น้องหมาสีน้ำตาลทองสุดน่ารัก เดินตามทางสมูท
             let dogScreenX = dogX - cameraX;
             if(dogScreenX >= -60 && dogScreenX <= width + 60) {
                 ctx.save();
@@ -455,8 +461,8 @@
                 let bounce = Math.abs(Math.sin(time * 8)) * 3;
                 ctx.translate(0, -bounce);
 
-                // ตัวน้องหมา
-                ctx.fillStyle = '#fef08a';
+                // ตัวน้องหมา (สีน้ำตาลทองชัดเจน มองเห็นง่าย)
+                ctx.fillStyle = '#d97706';
                 ctx.beginPath();
                 ctx.ellipse(0, 0, 18, 12, 0, 0, Math.PI * 2);
                 ctx.fill();
@@ -467,13 +473,13 @@
                 ctx.fill();
 
                 // หูพับน่ารัก
-                ctx.fillStyle = '#fde047';
+                ctx.fillStyle = '#b45309';
                 ctx.beginPath();
                 ctx.arc(9, -14, 5, 0, Math.PI * 2);
                 ctx.fill();
 
                 // หางดุ๊กดิ๊ก
-                ctx.strokeStyle = '#fde047';
+                ctx.strokeStyle = '#b45309';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
                 ctx.moveTo(-16, -3);
