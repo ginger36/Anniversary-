@@ -240,8 +240,6 @@
             transition: opacity 1s ease;
         }
         #final-screen.show { display: flex; opacity: 1; }
-        .final-content h2 { font-size: 26px; color: #e11d48; margin-bottom: 15px; line-height: 1.4; }
-        .final-content p { font-size: 18px; color: #64748b; line-height: 1.6; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -250,7 +248,7 @@
         <!-- Start Screen -->
         <div id="start-screen">
             <h1>ปลายฝนต้นหนาว ♡</h1>
-            <p>เดินเล่นริมชายหาดพระอาทิตย์ตกลงไปพร้อมกับน้องหมา<br>แตะดาวทะเลเพื่อเปิดความทรงจำทั้ง 6 กันนะ...</p>
+            <p><strong>คลิกที่น้องหมา</strong> เพื่อน้องหมาจะวิ่งไปหาดาวทะเลเพื่อเปิดความทรงจำทีละจุดกันนะ...</p>
             <button class="start-btn" onclick="startExperience()">เริ่มต้นเรื่องราว</button>
         </div>
 
@@ -258,13 +256,13 @@
 
         <div class="ui-layer" id="uiLayer" style="display: none;">
             <header>
-                <div class="progress-badge" id="progressText">⭐ ดาวทะเล 0/6</div>
+                <div class="progress-badge" id="progressText">⭐ ความทรงจำ 0/6</div>
                 <div class="music-btn" id="musicToggleBtn" onclick="toggleMusic()">♫</div>
             </header>
-            <div class="bottom-hint" id="bottomHint">💡 แตะที่ "ดาวทะเลระยิบระยับ" บนหาดทรายเพื่อเก็บความทรงจำ</div>
+            <div class="bottom-hint" id="bottomHint">🐶 คลิกที่ "น้องหมาสีน้ำตาลทอง" เพื่อให้น้องหมาวิ่งไปหาความทรงจำ!</div>
         </div>
 
-        <!-- Hidden YouTube Audio Player (เพลงปลายฝนต้นหนาวตามขอ) -->
+        <!-- Hidden YouTube Audio Player (เพลงปลายฝนต้นหนาว) -->
         <div id="youtube-player-container" style="display:none;">
             <iframe id="yt-player" width="200" height="200" src="https://www.youtube.com/embed/faccKGHl5jM?enablejsapi=1&autoplay=1&loop=1&playlist=faccKGHl5jM" frameborder="0"></iframe>
         </div>
@@ -282,38 +280,37 @@
             </div>
         </div>
 
-        <!-- Final Screen (การ์ดตอนท้าย ธีมพระอาทิตย์ตกและทะเล) -->
+        <!-- Final Screen (การ์ดธีมพระอาทิตย์ตกและทะเล) -->
         <div id="final-screen">
             <div class="final-content" style="background: linear-gradient(135deg, #fff1f2, #ffedd5); padding: 24px; border-radius: 20px; border: 1px solid #fbcfe8; box-shadow: 0 15px 35px rgba(244,63,94,0.15);">
                 <h2 style="color: #e11d48; font-size: 24px;">🌅 ปลายฝนต้นหนาว 🌊</h2>
-                <p style="font-size: 16px; color: #475569; margin-top: 10px;">
+                <p style="font-size: 16px; color: #475569; margin-top: 10px; line-height: 1.6;">
                     ขอบคุณที่เดินเคียงข้างกันมาจนครบทุกความทรงจำนะ<br>
                     แสงพระอาทิตย์ตกดินและเกลียวคลื่นทะเลวันนี้<br>
                     สวยงามที่สุดก็เพราะมีแกอยู่ด้วยกันตรงนี้ ♡<br><br>
                     <strong>รักแกเสมอนะ</strong>
                 </p>
-                <button class="start-btn" onclick="resetExperience()">เริ่มสำรวจใหม่อีกครั้ง</button>
+                <button class="start-btn" onclick="resetExperience()" style="margin-top: 15px;">เริ่มสำรวจใหม่อีกครั้ง</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ข้อมูลความทรงจำทั้ง 6 จุด
         const memoriesData = [
-            { id: 1, name: "ความทรงจำที่ 1", x: 0.15, imagePath: "", message: "รู้ไหมที่เราทักไปหาแกก่อน\nเพราะเราแอบชอบแก" },
-            { id: 2, name: "ความทรงจำที่ 2", x: 0.32, imagePath: "image_2.png", message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔" },
-            { id: 3, name: "ความทรงจำที่ 3", x: 0.50, imagePath: "", message: "นึกว่าพึ่งเป็นเด็กเอาแต่ใจ\nที่ไหนได้เอาแต่ใจตั้งนานแล้วว่ะ 😜" },
-            { id: 4, name: "ความทรงจำที่ 4", x: 0.68, imagePath: "", message: "ตอนนี้ฉันถ่ายรูปให้แก\nอุส่าห์ตั้งใจถ่ายแนะ 📸" },
-            { id: 5, name: "ความทรงจำที่ 5", x: 0.85, imagePath: "", message: "ยุ่ดีๆบอลก็ขอเค้าเป็นแฟน\nในขณะที่เล่นเกม และกำลังงอนกัน 😳" },
-            { id: 6, name: "ความทรงจำที่ 6", x: 1.02, imagePath: "", message: "ปลายฝนต้นหนาวนี้...\nขอบคุณนะสำหรับทุกความทรงจำดีๆ ที่เรามีให้กัน ♡" }
+            { id: 1, name: "ความทรงจำที่ 1", x: 0.18, message: "รู้ไหมที่เราทักไปหาแกก่อน\nเพราะเราแอบชอบแก" },
+            { id: 2, name: "ความทรงจำที่ 2", x: 0.35, imagePath: "image_2.png", message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔" },
+            { id: 3, name: "ความทรงจำที่ 3", x: 0.52, message: "นึกว่าพึ่งเป็นเด็กเอาแต่ใจ\nที่ไหนได้เอาแต่ใจตั้งนานแล้วว่ะ 😜" },
+            { id: 4, name: "ความทรงจำที่ 4", x: 0.69, message: "ตอนนี้ฉันถ่ายรูปให้แก\nอุส่าห์ตั้งใจถ่ายแนะ 📸" },
+            { id: 5, name: "ความทรงจำที่ 5", x: 0.86, message: "ยุ่ดีๆบอลก็ขอเค้าเป็นแฟน\nในขณะที่เล่นเกม และกำลังงอนกัน 😳" },
+            { id: 6, name: "ความทรงจำที่ 6", x: 1.02, message: "ปลายฝนต้นหนาวนี้...\nขอบคุณนะสำหรับทุกความทรงจำดีๆ ที่เรามีให้กัน ♡" }
         ];
 
-        let discovered = new Array(6).fill(false);
+        let currentStep = 0; // นับจำนวนความทรงจำที่เปิดไปแล้ว (0 ถึง 6)
         let isStarted = false;
         let cameraX = 0;
         let targetCameraX = 0;
         let worldWidth = 3200;
-        let dogX = 150; // ตำแหน่งเริ่มต้นน้องหมา
+        let dogX = 120; // ตำแหน่งเริ่มต้นน้องหมา
 
         const canvas = document.getElementById('beachCanvas');
         const ctx = canvas.getContext('2d');
@@ -332,8 +329,7 @@
                 x: Math.random() * worldWidth,
                 y: Math.random() * height * 0.45 + height * 0.2,
                 size: Math.random() * 2 + 1.2,
-                speedX: Math.random() * 0.3 + 0.1,
-                opacity: Math.random() * 0.5 + 0.2
+                speedX: Math.random() * 0.3 + 0.1
             });
         }
 
@@ -370,10 +366,12 @@
 
             cameraX += (targetCameraX - cameraX) * 0.08;
 
-            // คำนวณตำแหน่งน้องหมาให้เดินตามความทรงจำทีละจุดอย่างแม่นยำ
-            let count = discovered.filter(Boolean).length;
-            let targetDogWorldX = 150 + (count / 6) * (memoriesData[5].x * worldWidth - 100);
-            dogX += (targetDogWorldX - dogX) * 0.06;
+            // คํานวณเป้าหมายที่น้องหมาต้องวิ่งไป (ตามจำนวน step ที่กดคลิกที่ตัวน้องหมา)
+            let targetDogWorldX = 120;
+            if (currentStep > 0 && currentStep <= memoriesData.length) {
+                targetDogWorldX = memoriesData[currentStep - 1].x * worldWidth;
+            }
+            dogX += (targetDogWorldX - dogX) * 0.1; // วิ่งพุ่งไปอย่างสมูท
 
             ctx.clearRect(0, 0, width, height);
 
@@ -453,37 +451,41 @@
                 if(p.x < 0) p.x = worldWidth;
             });
 
-            // 4. น้องหมาสีน้ำตาลทองสุดน่ารัก เดินตามทางสมูท
+            // 4. น้องหมาสีน้ำตาลทองสุดน่ารัก (ตัวที่ให้คลิก)
             let dogScreenX = dogX - cameraX;
-            if(dogScreenX >= -60 && dogScreenX <= width + 60) {
+            if(dogScreenX >= -80 && dogScreenX <= width + 80) {
                 ctx.save();
                 ctx.translate(dogScreenX, height * 0.78);
-                let bounce = Math.abs(Math.sin(time * 8)) * 3;
+                let bounce = Math.abs(Math.sin(time * 12)) * 4; // วิ่งดุ๊กดิ๊กเร็วขึ้นตอนขยับ
                 ctx.translate(0, -bounce);
 
-                // ตัวน้องหมา (สีน้ำตาลทองชัดเจน มองเห็นง่าย)
+                // วาดแสงเรืองรองรอบตัวน้องหมาเพื่อให้รู้ว่าจิ้มได้
+                ctx.shadowColor = '#f43f5e';
+                ctx.shadowBlur = 12;
+
+                // ตัวน้องหมาสีน้ำตาลทอง
                 ctx.fillStyle = '#d97706';
                 ctx.beginPath();
-                ctx.ellipse(0, 0, 18, 12, 0, 0, Math.PI * 2);
+                ctx.ellipse(0, 0, 20, 13, 0, 0, Math.PI * 2);
                 ctx.fill();
 
                 // หัวน้องหมา
                 ctx.beginPath();
-                ctx.arc(13, -8, 10, 0, Math.PI * 2);
+                ctx.arc(14, -9, 11, 0, Math.PI * 2);
                 ctx.fill();
 
                 // หูพับน่ารัก
                 ctx.fillStyle = '#b45309';
                 ctx.beginPath();
-                ctx.arc(9, -14, 5, 0, Math.PI * 2);
+                ctx.arc(10, -15, 5, 0, Math.PI * 2);
                 ctx.fill();
 
                 // หางดุ๊กดิ๊ก
                 ctx.strokeStyle = '#b45309';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
-                ctx.moveTo(-16, -3);
-                ctx.quadraticCurveTo(-26, -14 + Math.sin(time * 16) * 6, -22, -20);
+                ctx.moveTo(-18, -3);
+                ctx.quadraticCurveTo(-28, -16 + Math.sin(time * 20) * 8, -24, -22);
                 ctx.stroke();
 
                 ctx.restore();
@@ -499,13 +501,13 @@
                     ctx.save();
                     ctx.translate(screenObjX, objY);
 
-                    if(!discovered[index]) {
+                    if(index >= currentStep) {
                         let glow = Math.sin(time * 5) * 8 + 10;
                         ctx.shadowColor = '#f43f5e';
                         ctx.shadowBlur = glow;
                     }
 
-                    ctx.fillStyle = discovered[index] ? '#cbd5e1' : '#f43f5e';
+                    ctx.fillStyle = index < currentStep ? '#cbd5e1' : '#f43f5e';
                     drawStar(ctx, 0, 0, 5, 16, 8);
                     ctx.fill();
 
@@ -573,28 +575,34 @@
             }
         }
 
+        // คลิกที่ตัวน้องหมา เพื่อให้น้องหมาวิ่งไปหาความทรงจำถัดไป
         canvas.addEventListener('click', (e) => {
             if(!isStarted) return;
             const rect = canvas.getBoundingClientRect();
             const clickX = e.clientX - rect.left;
             const clickY = e.clientY - rect.top;
 
-            memoriesData.forEach((mem, index) => {
-                let worldObjX = mem.x * worldWidth;
-                let screenObjX = worldObjX - cameraX;
-                let objY = height * 0.83;
+            let dogScreenX = dogX - cameraX;
+            let dogScreenY = height * 0.78;
 
-                if(Math.abs(clickX - screenObjX) < 45 && Math.abs(clickY - objY) < 45) {
-                    openMemory(index);
+            // ตรวจสอบว่าคลิกโดนตัวน้องหมาหรือไม่
+            if(Math.abs(clickX - dogScreenX) < 45 && Math.abs(clickY - dogScreenY) < 45) {
+                if(currentStep < memoriesData.length) {
+                    let mem = memoriesData[currentStep];
+                    let worldObjX = mem.x * worldWidth;
+                    
+                    // เลื่อนกล้องตามไปหาน้องหมาและดาวทะเลจุดนั้น
                     targetCameraX = Math.max(0, Math.min(worldWidth - width, worldObjX - width / 2));
+                    
+                    // เปิดหน้าต่างความทรงจำ
+                    openMemory(currentStep);
+                    currentStep++;
                 }
-            });
+            }
         });
 
         function openMemory(index) {
-            discovered[index] = true;
-            let count = discovered.filter(Boolean).length;
-            document.getElementById('progressText').innerText = `⭐ ดาวทะเล ${count}/6`;
+            document.getElementById('progressText').innerText = `⭐ ความทรงจำ ${index + 1}/6`;
 
             const mem = memoriesData[index];
             document.getElementById('modalTitle').innerText = mem.name;
@@ -608,24 +616,25 @@
             }
 
             document.getElementById('memory-modal').classList.add('show');
-
-            if(count === 6) {
-                setTimeout(() => {
-                    document.getElementById('final-screen').classList.add('show');
-                }, 1200);
-            }
         }
 
         function closeMemoryModal() {
             document.getElementById('memory-modal').classList.remove('show');
+
+            // ถ้าเปิดครบ 6 จุดแล้ว ให้แสดงหน้าสุดท้าย
+            if(currentStep === 6) {
+                setTimeout(() => {
+                    document.getElementById('final-screen').classList.add('show');
+                }, 500);
+            }
         }
 
         function resetExperience() {
-            discovered.fill(false);
+            currentStep = 0;
             document.getElementById('final-screen').classList.remove('show');
-            document.getElementById('progressText').innerText = `⭐ ดาวทะเล 0/6`;
+            document.getElementById('progressText').innerText = `⭐ ความทรงจำ 0/6`;
             targetCameraX = 0;
-            dogX = 150;
+            dogX = 120;
         }
     </script>
 </body>
