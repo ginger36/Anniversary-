@@ -189,22 +189,22 @@
             border: 1px dashed rgba(244, 63, 94, 0.4);
             border-radius: 4px;
         }
-        .card-title { font-size: 20px; font-weight: bold; color: #e11d48; margin-bottom: 12px; text-align: center; }
+        .card-title { font-size: 20px; font-weight: bold; color: #e11d48; margin-bottom: 10px; text-align: center; }
         .card-img-container {
             width: 100%;
-            height: 190px;
+            height: 170px;
             background: #fff1f2;
             border-radius: 12px;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border: 1px dashed #fbcfe8;
         }
         .card-img-container img { width: 100%; height: 100%; object-fit: cover; }
         .placeholder-text { color: #f43f5e; font-size: 14px; text-align: center; padding: 10px; }
-        .card-message { font-size: 16px; line-height: 1.6; color: #475569; min-height: 60px; text-align: center; white-space: pre-line; margin-bottom: 20px; }
+        .card-message { font-size: 15px; line-height: 1.5; color: #475569; min-height: 50px; text-align: center; white-space: pre-line; margin-bottom: 15px; }
         .close-card-btn {
             display: block;
             width: 100%;
@@ -248,7 +248,7 @@
         <!-- Start Screen -->
         <div id="start-screen">
             <h1>ปลายฝนต้นหนาว ♡</h1>
-            <p><strong>คลิกที่น้องหมา</strong> เพื่อน้องหมาจะวิ่งไปหาดาวทะเลเพื่อเปิดความทรงจำทีละจุดกันนะ...</p>
+            <p><strong>คลิกที่น้องหมา</strong> เพื่อน้องหมาจะวิ่งไปเปิดความทรงจำตามชายหาดที่แสนอบอุ่นกันนะ...</p>
             <button class="start-btn" onclick="startExperience()">เริ่มต้นเรื่องราว</button>
         </div>
 
@@ -280,7 +280,7 @@
             </div>
         </div>
 
-        <!-- Final Screen (การ์ดธีมพระอาทิตย์ตกและทะเล) -->
+        <!-- Final Screen -->
         <div id="final-screen">
             <div class="final-content" style="background: linear-gradient(135deg, #fff1f2, #ffedd5); padding: 24px; border-radius: 20px; border: 1px solid #fbcfe8; box-shadow: 0 15px 35px rgba(244,63,94,0.15);">
                 <h2 style="color: #e11d48; font-size: 24px;">🌅 ปลายฝนต้นหนาว 🌊</h2>
@@ -297,20 +297,20 @@
 
     <script>
         const memoriesData = [
-            { id: 1, name: "ความทรงจำที่ 1", x: 0.18, message: "รู้ไหมที่เราทักไปหาแกก่อน\nเพราะเราแอบชอบแก" },
-            { id: 2, name: "ความทรงจำที่ 2", x: 0.35, imagePath: "image_2.png", message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔" },
-            { id: 3, name: "ความทรงจำที่ 3", x: 0.52, message: "นึกว่าพึ่งเป็นเด็กเอาแต่ใจ\nที่ไหนได้เอาแต่ใจตั้งนานแล้วว่ะ 😜" },
-            { id: 4, name: "ความทรงจำที่ 4", x: 0.69, message: "ตอนนี้ฉันถ่ายรูปให้แก\nอุส่าห์ตั้งใจถ่ายแนะ 📸" },
-            { id: 5, name: "ความทรงจำที่ 5", x: 0.86, message: "ยุ่ดีๆบอลก็ขอเค้าเป็นแฟน\nในขณะที่เล่นเกม และกำลังงอนกัน 😳" },
-            { id: 6, name: "ความทรงจำที่ 6", x: 1.02, message: "ปลายฝนต้นหนาวนี้...\nขอบคุณนะสำหรับทุกความทรงจำดีๆ ที่เรามีให้กัน ♡" }
+            { id: 1, name: "ความทรงจำที่ 1", x: 0.18, imagePath: "https://i.postimg.cc/MKCVk1Zs/line-oa-chat-261005-131012.jpg", message: "รู้ไหมที่เราทักไปหาแกก่อน\nเพราะเราแอบชอบแก" },
+            { id: 2, name: "ความทรงจำที่ 2", x: 0.35, imagePath: "https://i.postimg.cc/VLrWpqgq/line-oa-chat-261005-174239.jpg", message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔" },
+            { id: 3, name: "ความทรงจำที่ 3", x: 0.52, imagePath: "https://i.postimg.cc/02M0FYnp/line-oa-chat-261005-174318.jpg", message: "นึกว่าพึ่งเป็นเด็กเอาแต่ใจ\nที่ไหนได้เอาแต่ใจตั้งนานแล้วว่ะ 😜" },
+            { id: 4, name: "ความทรงจำที่ 4", x: 0.69, imagePath: "https://i.postimg.cc/CLBsXG7b/line-oa-chat-261005-174934.jpg", message: "ตอนนี้ฉันถ่ายรูปให้แก\nอุส่าห์ตั้งใจถ่ายแนะ 📸" },
+            { id: 5, name: "ความทรงจำที่ 5", x: 0.86, imagePath: "https://i.postimg.cc/L6Y3wtDk/line-oa-chat-261005-175008.jpg", message: "ยุ่ดีๆบอลก็ขอเค้าเป็นแฟน\nในขณะที่เล่นเกม และกำลังงอนกัน 😳" },
+            { id: 6, name: "ความทรงจำที่ 6", x: 1.02, imagePath: "", message: "ปลายฝนต้นหนาวนี้...\nขอบคุณนะสำหรับทุกความทรงจำดีๆ ที่เรามีให้กัน ♡" }
         ];
 
-        let currentStep = 0; // นับจำนวนความทรงจำที่เปิดไปแล้ว (0 ถึง 6)
+        let currentStep = 0;
         let isStarted = false;
         let cameraX = 0;
         let targetCameraX = 0;
         let worldWidth = 3200;
-        let dogX = 120; // ตำแหน่งเริ่มต้นน้องหมา
+        let dogX = 120;
 
         const canvas = document.getElementById('beachCanvas');
         const ctx = canvas.getContext('2d');
@@ -366,16 +366,15 @@
 
             cameraX += (targetCameraX - cameraX) * 0.08;
 
-            // คํานวณเป้าหมายที่น้องหมาต้องวิ่งไป (ตามจำนวน step ที่กดคลิกที่ตัวน้องหมา)
             let targetDogWorldX = 120;
             if (currentStep > 0 && currentStep <= memoriesData.length) {
                 targetDogWorldX = memoriesData[currentStep - 1].x * worldWidth;
             }
-            dogX += (targetDogWorldX - dogX) * 0.1; // วิ่งพุ่งไปอย่างสมูท
+            dogX += (targetDogWorldX - dogX) * 0.1;
 
             ctx.clearRect(0, 0, width, height);
 
-            // 1. ท้องฟ้าพระอาทิตย์ตก Smooth Gradient ละมุนตา
+            // 1. ท้องฟ้าพระอาทิตย์ตก
             let skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.52);
             skyGrad.addColorStop(0, '#fbcfe8');
             skyGrad.addColorStop(0.35, '#fed7aa');
@@ -384,7 +383,6 @@
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, width, height * 0.52);
 
-            // ดวงอาทิตย์แสงฟุ้งสมูท
             let sunX = width * 0.65 - (cameraX * 0.12);
             let sunY = height * 0.38;
             let sunGrad = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, 85);
@@ -396,7 +394,7 @@
             ctx.arc(sunX, sunY, 85, 0, Math.PI * 2);
             ctx.fill();
 
-            // 2. ทะเลพระอาทิตย์ตกไล่เฉดสีสมูท
+            // 2. ทะเล
             let seaY = height * 0.52;
             let seaGrad = ctx.createLinearGradient(0, seaY, 0, height * 0.72);
             seaGrad.addColorStop(0, '#f43f5e');
@@ -406,7 +404,6 @@
             ctx.fillStyle = seaGrad;
             ctx.fillRect(0, seaY, width, height * 0.2);
 
-            // ระลอกคลื่นน้ำทะเล
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
             ctx.lineWidth = 2;
             for(let i=0; i<3; i++) {
@@ -420,7 +417,7 @@
                 ctx.stroke();
             }
 
-            // 3. หาดทรายอบอุ่น
+            // 3. หาดทราย
             let sandY = height * 0.72;
             let sandGrad = ctx.createLinearGradient(0, sandY, 0, height);
             sandGrad.addColorStop(0, '#fef08a');
@@ -435,10 +432,8 @@
             ctx.closePath();
             ctx.fill();
 
-            // ตกแต่งริมชายหาด
-            drawBeachDecorations(cameraX);
+            drawRichBeachDecorations(cameraX);
 
-            // ละอองแสงพาสเทล
             ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
             particles.forEach(p => {
                 let screenX = p.x - cameraX;
@@ -451,36 +446,31 @@
                 if(p.x < 0) p.x = worldWidth;
             });
 
-            // 4. น้องหมาสีน้ำตาลทองสุดน่ารัก (ตัวที่ให้คลิก)
+            // 4. น้องหมา
             let dogScreenX = dogX - cameraX;
             if(dogScreenX >= -80 && dogScreenX <= width + 80) {
                 ctx.save();
                 ctx.translate(dogScreenX, height * 0.78);
-                let bounce = Math.abs(Math.sin(time * 12)) * 4; // วิ่งดุ๊กดิ๊กเร็วขึ้นตอนขยับ
+                let bounce = Math.abs(Math.sin(time * 12)) * 4;
                 ctx.translate(0, -bounce);
 
-                // วาดแสงเรืองรองรอบตัวน้องหมาเพื่อให้รู้ว่าจิ้มได้
                 ctx.shadowColor = '#f43f5e';
                 ctx.shadowBlur = 12;
 
-                // ตัวน้องหมาสีน้ำตาลทอง
                 ctx.fillStyle = '#d97706';
                 ctx.beginPath();
                 ctx.ellipse(0, 0, 20, 13, 0, 0, Math.PI * 2);
                 ctx.fill();
 
-                // หัวน้องหมา
                 ctx.beginPath();
                 ctx.arc(14, -9, 11, 0, Math.PI * 2);
                 ctx.fill();
 
-                // หูพับน่ารัก
                 ctx.fillStyle = '#b45309';
                 ctx.beginPath();
                 ctx.arc(10, -15, 5, 0, Math.PI * 2);
                 ctx.fill();
 
-                // หางดุ๊กดิ๊ก
                 ctx.strokeStyle = '#b45309';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
@@ -491,7 +481,7 @@
                 ctx.restore();
             }
 
-            // 5. ดาวทะเลระยิบระยับบนพื้นทราย
+            // 5. ดาวทะเล
             memoriesData.forEach((mem, index) => {
                 let worldObjX = mem.x * worldWidth;
                 let screenObjX = worldObjX - cameraX;
@@ -547,35 +537,67 @@
             ctx.closePath();
         }
 
-        function drawBeachDecorations(camX) {
-            let treeX = 700 - camX;
-            if(treeX > -100 && treeX < width + 100) {
-                ctx.fillStyle = '#92400e';
-                ctx.fillRect(treeX, height * 0.42, 18, height * 0.32);
-                ctx.fillStyle = '#059669';
-                ctx.beginPath();
-                ctx.ellipse(treeX + 9, height * 0.42, 45, 14, -0.25, 0, Math.PI * 2);
-                ctx.ellipse(treeX + 9, height * 0.42, 45, 14, 0.25, 0, Math.PI * 2);
-                ctx.fill();
-            }
+        function drawRichBeachDecorations(camX) {
+            const decorations = [
+                { type: 'palm', x: 300 },
+                { type: 'bush', x: 550 },
+                { type: 'castle', x: 900 },
+                { type: 'palm', x: 1300 },
+                { type: 'hammock', x: 1350 },
+                { type: 'lights', x: 1400 },
+                { type: 'bush', x: 1850 },
+                { type: 'castle', x: 2200 },
+                { type: 'palm', x: 2700 },
+                { type: 'bush', x: 3000 }
+            ];
 
-            let castleX = 1600 - camX;
-            if(castleX > -100 && castleX < width + 100) {
-                ctx.fillStyle = '#d97706';
-                ctx.fillRect(castleX, height * 0.68, 55, 45);
-                ctx.fillRect(castleX + 12, height * 0.62, 31, 18);
-            }
+            decorations.forEach(item => {
+                let screenX = item.x - camX;
+                if(screenX > -150 && screenX < width + 150) {
+                    if(item.type === 'palm') {
+                        ctx.fillStyle = '#92400e';
+                        ctx.fillRect(screenX, height * 0.45, 16, height * 0.28);
+                        ctx.fillStyle = '#059669';
+                        ctx.beginPath();
+                        ctx.ellipse(screenX + 8, height * 0.45, 42, 13, -0.3, 0, Math.PI * 2);
+                        ctx.ellipse(screenX + 8, height * 0.45, 42, 13, 0.3, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if(item.type === 'bush') {
+                        ctx.fillStyle = '#10b981';
+                        ctx.beginPath();
+                        ctx.arc(screenX, height * 0.73, 22, 0, Math.PI * 2);
+                        ctx.arc(screenX + 15, height * 0.72, 16, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if(item.type === 'castle') {
+                        ctx.fillStyle = '#d97706';
+                        ctx.fillRect(screenX, height * 0.67, 50, 38);
+                        ctx.fillRect(screenX + 10, height * 0.61, 30, 16);
+                    } else if(item.type === 'hammock') {
+                        ctx.strokeStyle = '#78350f';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(screenX - 40, height * 0.65);
+                        ctx.quadraticCurveTo(screenX, height * 0.75, screenX + 40, height * 0.65);
+                        ctx.stroke();
+                    } else if(item.type === 'lights') {
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.moveTo(screenX - 60, height * 0.48);
+                        ctx.quadraticCurveTo(screenX, height * 0.58, screenX + 60, height * 0.48);
+                        ctx.stroke();
 
-            let crabX = 2500 - camX;
-            if(crabX > -50 && crabX < width + 50) {
-                ctx.fillStyle = '#e11d48';
-                ctx.beginPath();
-                ctx.arc(crabX, height * 0.85, 9, 0, Math.PI * 2);
-                ctx.fill();
-            }
+                        for(let l = -40; l <= 40; l += 20) {
+                            ctx.fillStyle = '#fde047';
+                            ctx.beginPath();
+                            ctx.arc(screenX + l, height * 0.53 + Math.sin(l) * 2, 4, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    }
+                }
+            });
         }
 
-        // คลิกที่ตัวน้องหมา เพื่อให้น้องหมาวิ่งไปหาความทรงจำถัดไป
         canvas.addEventListener('click', (e) => {
             if(!isStarted) return;
             const rect = canvas.getBoundingClientRect();
@@ -585,16 +607,12 @@
             let dogScreenX = dogX - cameraX;
             let dogScreenY = height * 0.78;
 
-            // ตรวจสอบว่าคลิกโดนตัวน้องหมาหรือไม่
             if(Math.abs(clickX - dogScreenX) < 45 && Math.abs(clickY - dogScreenY) < 45) {
                 if(currentStep < memoriesData.length) {
                     let mem = memoriesData[currentStep];
                     let worldObjX = mem.x * worldWidth;
                     
-                    // เลื่อนกล้องตามไปหาน้องหมาและดาวทะเลจุดนั้น
                     targetCameraX = Math.max(0, Math.min(worldWidth - width, worldObjX - width / 2));
-                    
-                    // เปิดหน้าต่างความทรงจำ
                     openMemory(currentStep);
                     currentStep++;
                 }
@@ -621,7 +639,6 @@
         function closeMemoryModal() {
             document.getElementById('memory-modal').classList.remove('show');
 
-            // ถ้าเปิดครบ 6 จุดแล้ว ให้แสดงหน้าสุดท้าย
             if(currentStep === 6) {
                 setTimeout(() => {
                     document.getElementById('final-screen').classList.add('show');
