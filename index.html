@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Sunset Journey ❤️️</title>
+    <title>Our Sunset Journey ❤️</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&family=Sacramento&display=swap" rel="stylesheet">
     <style>
         * {
@@ -14,22 +14,21 @@
 
         body {
             font-family: 'Prompt', sans-serif;
-            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 50%, #ff6a88 100%);
+            background: linear-gradient(135deg, #2c1654 0%, #ff7e5f 100%);
             color: #4a4a4a;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            position: relative;
         }
 
-        /* หน้าแรก (Landing Page) */
+        /* หน้าแรกต้อนรับ */
         #welcome-screen {
             position: absolute;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(255, 126, 95, 0.95), rgba(254, 180, 123, 0.95));
+            background: linear-gradient(135deg, rgba(44, 22, 84, 0.95), rgba(255, 126, 95, 0.95));
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -43,21 +42,21 @@
         #welcome-screen h1 {
             font-family: 'Sacramento', cursive;
             font-size: 4rem;
-            color: #fff;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            color: #ffb703;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
             margin-bottom: 10px;
         }
 
         #welcome-screen p {
             color: #fff;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             margin-bottom: 30px;
             font-weight: 300;
         }
 
         .btn-start {
             background: #fff;
-            color: #ff6a88;
+            color: #ff7e5f;
             border: none;
             padding: 14px 40px;
             font-size: 1.1rem;
@@ -65,42 +64,64 @@
             font-weight: 600;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
         }
 
         .btn-start:hover {
             transform: translateY(-3px);
             background: #fff5f6;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
 
-        /* หน้าจอหลัก (กรอบมือถือ) */
+        /* กรอบจำลองมือถือ */
         #main-container {
             position: relative;
             width: 100vw;
             height: 100vh;
-            max-width: 480px;
+            max-width: 450px;
             max-height: 850px;
-            background: linear-gradient(to bottom, #2c1654 0%, #783853 40%, #e07a5f 70%, #f4f1de 100%);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            background: linear-gradient(to bottom, #1f1135 0%, #5c3556 40%, #e07a5f 75%, #f4f1de 100%);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
             overflow: hidden;
-            border-radius: 30px;
+            border-radius: 35px;
         }
 
-        /* เลเยอร์ฉากหลังตึกที่จะเลื่อนขยับได้ */
-        .scrolling-bg {
+        /* กล่องข้อความสไตล์แชทด้านบนแบบในเรฟ */
+        .chat-bubble-top {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 1rem;
+            text-align: center;
+            z-index: 20;
+            width: 85%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.15);
+            animation: fadeInDown 0.6s ease;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translate(-50%, -15px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* แบ็คกราวด์ตึกและเมือง */
+        .city-bg {
             position: absolute;
             bottom: 35%;
-            left: 0;
-            width: 300%; /* ยาวกว่าหน้าจอเพื่อให้เลื่อนแพนกล้องได้ */
-            height: 45%;
-            background-image: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80');
-            background-size: repeat-x;
-            background-position: bottom;
-            opacity: 0.3;
+            width: 100%;
+            height: 48%;
+            background-image: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.35;
             z-index: 1;
-            transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         /* สายน้ำยามเย็น */
@@ -109,95 +130,77 @@
             bottom: 0;
             width: 100%;
             height: 38%;
-            background: linear-gradient(to bottom, #1d3557, #112233);
+            background: linear-gradient(to bottom, #1d3557, #0d1b2a);
             z-index: 2;
-            border-top: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid rgba(255, 255, 255, 0.25);
         }
 
-        /* ระลอกคลื่นน้ำ */
-        .wave {
+        /* ป้ายสถานที่คลิกได้ (เหมือนในเรฟ) */
+        .location-tag {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: ripple 3s infinite linear;
-        }
-
-        @keyframes ripple {
-            0% { transform: scale(0.95); opacity: 0.5; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(0.95); opacity: 0.5; }
-        }
-
-        /* เส้นทางการเดินทางของเรือ (Path) */
-        .path-line {
-            position: absolute;
-            bottom: 20%;
-            left: 10%;
-            width: 80%;
-            height: 2px;
-            border-bottom: 2px dashed rgba(255, 255, 255, 0.4);
-            z-index: 3;
-        }
-
-        /* จุดเช็คอินบนเส้นทาง */
-        .checkpoint {
-            position: absolute;
-            bottom: 18.5%;
-            transform: translateX(-50%);
-            z-index: 4;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            z-index: 15;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.2s;
             text-align: center;
         }
 
-        .checkpoint-dot {
-            width: 16px;
-            height: 16px;
-            background: #ffb703;
-            border: 3px solid #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #ffb703;
-            transition: all 0.3s;
-        }
-
-        .checkpoint.active .checkpoint-dot {
+        .location-tag:hover {
+            transform: scale(1.1);
             background: #e63946;
-            transform: scale(1.3);
-            box-shadow: 0 0 15px #e63946;
         }
 
-        .checkpoint-label {
-            position: absolute;
-            top: 22px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            font-size: 0.75rem;
-            padding: 3px 8px;
-            border-radius: 10px;
-            white-space: nowrap;
-        }
+        /* ตำแหน่งป้ายจำลองตามฉาก */
+        #tag-1 { top: 42%; left: 45%; }
+        #tag-2 { top: 52%; left: 25%; }
+        #tag-3 { top: 52%; left: 68%; }
 
-        /* เรือกระดาษที่เคลื่อนที่ไปพร้อมกับแบ็คกราวด์ */
+        /* เรือกระดาษที่ลอยอยู่กลางน้ำ */
         #paper-boat {
             position: absolute;
-            bottom: 19%;
-            left: 10%;
+            bottom: 18%;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 2.2rem;
             z-index: 5;
-            transform: translateX(-50%);
-            transition: left 1.5s cubic-bezier(0.25, 1, 0.5, 1);
-            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4));
+            filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5));
+            animation: floatBoat 3s ease-in-out infinite;
         }
 
-        /* โพลารอยด์ความทรงจำ (Pop-up) */
+        @keyframes floatBoat {
+            0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+            50% { transform: translateX(-50%) translateY(-6px) rotate(2deg); }
+        }
+
+        /* ป้ายจดหมายปักบนเรือ */
+        .boat-letter {
+            position: absolute;
+            bottom: 25%;
+            left: 55%;
+            background: #fff;
+            color: #333;
+            padding: 3px 8px;
+            font-size: 0.7rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            z-index: 6;
+            animation: floatBoat 3s ease-in-out infinite;
+        }
+
+        /* โมดอลแสดงรูปโพลารอยด์และความทรงจำ */
         #memory-modal {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.65);
             backdrop-filter: blur(5px);
             display: none;
             justify-content: center;
@@ -208,9 +211,9 @@
 
         .polaroid-card {
             background: #fff;
-            padding: 20px 20px 30px 20px;
+            padding: 20px 20px 25px 20px;
             border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             max-width: 320px;
             width: 100%;
             text-align: center;
@@ -224,7 +227,7 @@
 
         .polaroid-img {
             width: 100%;
-            height: 200px;
+            height: 220px;
             object-fit: cover;
             border-radius: 6px;
             margin-bottom: 15px;
@@ -239,7 +242,7 @@
         }
 
         .btn-close-modal {
-            background: #ff6a88;
+            background: #ff7e5f;
             color: #fff;
             border: none;
             padding: 8px 25px;
@@ -251,19 +254,19 @@
         }
 
         .btn-close-modal:hover {
-            background: #e05370;
+            background: #e06548;
         }
 
         /* แผงควบคุมด้านล่าง */
         .control-panel {
             position: absolute;
-            bottom: 20px;
+            bottom: 25px;
             width: 100%;
             text-align: center;
             z-index: 10;
         }
 
-        .btn-next-step {
+        .btn-next {
             background: linear-gradient(135deg, #ff7e5f, #ff6a88);
             color: #fff;
             border: none;
@@ -274,11 +277,6 @@
             border-radius: 30px;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
-        }
-
-        .btn-next-step:active {
-            transform: scale(0.95);
         }
 
         /* หน้าปลายทาง (Destination) */
@@ -297,12 +295,11 @@
             padding: 30px;
             text-align: center;
             color: #fff;
-            animation: fadeIn 1s ease-in-out;
         }
 
         #destination-screen h2 {
             font-family: 'Sacramento', cursive;
-            font-size: 3rem;
+            font-size: 3.2rem;
             color: #ffb703;
             margin-bottom: 10px;
         }
@@ -321,7 +318,6 @@
             font-size: 1.05rem;
             font-weight: 500;
             color: #ffd166;
-            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -330,37 +326,41 @@
     <!-- หน้าแรก -->
     <div id="welcome-screen">
         <h1>Our Sunset Journey</h1>
-        <p>การเดินทางผ่านกาลเวลาและความทรงจำของเรา 🌅</p>
-        <button class="btn-start" onclick="startJourney()">กดเพื่อออกเดินทาง ⛵</button>
+        <p>พับเรือส่งใจไปหาเธอ... ในบรรยากาศยามเย็น 🌅</p>
+        <button class="btn-start" onclick="startJourney()">กดเพื่อเปิดจดหมาย 💌</button>
     </div>
 
     <!-- หน้าจอหลัก -->
     <div id="main-container">
-        <!-- แบ็คกราวด์ตึกที่จะเลื่อนตามการเดินทาง -->
-        <div class="scrolling-bg" id="scrollingBg"></div>
-        
-        <div class="river">
-            <div class="wave"></div>
+        <!-- กล่องข้อความแชทด้านบน -->
+        <div class="chat-bubble-top" id="chatMessage">
+            "ข้างนอกบรรยากาศดีจัง... เธอเป็นยังไงบ้าง?" 🌅
         </div>
 
-        <!-- เส้นทางและหมุด -->
-        <div class="path-line"></div>
-        <div id="checkpoints-container"></div>
+        <div class="city-bg"></div>
+        
+        <div class="river"></div>
 
-        <!-- เรือกระดาษเคลื่อนที่ -->
+        <!-- ป้ายสถานที่ต่างๆ ให้คลิก (ฟีลแบบในเรฟ) -->
+        <div class="location-tag" id="tag-1" onclick="openMemory(0)">📍 ท่าน้ำริมคลอง</div>
+        <div class="location-tag" id="tag-2" onclick="openMemory(1)">☕ ร้านกาแฟ</div>
+        <div class="location-tag" id="tag-3" onclick="openMemory(2)">🍜 ร้านก๋วยเตี๋ยว</div>
+
+        <!-- เรือกระดาษและจดหมาย -->
+        <div class="boat-letter">ถึง... คนดี 💌</div>
         <div id="paper-boat">⛵</div>
 
-        <!-- แผงควบคุมคลิกเดินทาง -->
+        <!-- แผงควบคุม -->
         <div class="control-panel">
-            <button class="btn-next-step" id="action-btn" onclick="nextCheckpoint()">ออกเดินทางต่อ ➡️</button>
+            <button class="btn-next" onclick="nextStep()">สำรวจความทรงจำถัดไป ✨</button>
         </div>
 
-        <!-- โมดอลแสดงจดหมายและรูปภาพ -->
+        <!-- โมดอลแสดงรูปโพลารอยด์และความทรงจำ -->
         <div id="memory-modal">
             <div class="polaroid-card">
                 <img id="modal-img" class="polaroid-img" src="" alt="Memory">
                 <p id="modal-text" class="polaroid-text"></p>
-                <button class="btn-close-modal" onclick="closeModal()">เก็บลงความทรงจำ ✨</button>
+                <button class="btn-close-modal" onclick="closeModal()">ปิดหน้าต่าง ✨</button>
             </div>
         </div>
 
@@ -371,102 +371,66 @@
                 <div class="counter-text" id="counter">กำลังคำนวณเวลา...</div>
             </div>
             <div class="dest-box" style="font-size: 0.95rem; line-height: 1.7;">
-                "ขอบคุณที่ยอมร่วมทางและสร้างความทรงจำที่อบอุ่นเหมือนพระอาทิตย์ตกดินด้วยกันนะ ขอให้เราเดินทางเคียงข้างกันแบบนี้ไปนานๆ เลยนะคนดี" 🌅💖
+                "ขอบคุณที่อยู่ข้างกันและสร้างความทรงจำที่อบอุ่นด้วยกันมาตลอดนะ ขอให้เราจับมือเดินทาแบบนี้ด้วยกันไปนานๆ เลยนะ" 🌅💖
             </div>
         </div>
     </div>
 
     <script>
-        // ข้อมูลจุดเช็คอินความทรงจำ
-        const milestones = [
+        // ข้อมูลความทรงจำแต่ละจุด
+        const memories = [
             {
-                title: "จุดที่ 1: ท่าน้ำริมคลอง",
-                text: "“จำวันที่เราไปนั่งคุยกันริมน้ำตอนเย็นได้ไหม? ท้องฟ้าสวยมาก แต่รอยยิ้มเธอสวยกว่านั้นอีกนะ”",
+                title: "ท่าน้ำริมคลอง",
+                text: "“จำวันที่เราไปนั่งมองพระอาทิตย์ตกด้วยกันได้ไหม? ท้องฟ้าสีส้มสวยมาก แต่เธอทำให้ทุกอย่างพิเศษกว่าเดิม”",
                 img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=500&q=80",
-                position: 25,
-                bgOffset: 0
+                chat: "“เราไปหาเธอไม่ได้เลย พับเรือส่งใจไปแทนนะ ⛵💖”"
             },
             {
-                title: "จุดที่ 2: ร้านกาแฟอบอุ่น",
-                text: "“โกโก้อุ่นๆ กับเสียงฝนตกเบาๆ วันนั้น ทำให้รู้ว่าการมีเธออยู่ข้างๆ มันอุ่นใจแค่ไหน”",
+                title: "ร้านกาแฟอบอุ่น",
+                text: "“โกโก้อุ่นๆ กับเสียงเพลงเบาๆ วันนั้น ทำให้รู้ว่าการมีเธออยู่ข้างๆ คือความสุขที่ง่ายที่สุด”",
                 img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=500&q=80",
-                position: 50,
-                bgOffset: -30
+                chat: "“บรรยากาศแบบนี้... คิดถึงรอยยิ้มเธอจังเลย 🥰”"
             },
             {
-                title: "จุดที่ 3: ร้านก๋วยเตี๋ยวเจ้าเก่า",
-                text: "“มื้ออร่อยๆ ง่ายๆ ที่มีความสุขที่สุด เพราะเราได้นั่งกินด้วยกันและแย่งกันชิมตลอดเวลา 🍜”",
+                title: "ร้านก๋วยเตี๋ยวเจ้าเก่า",
+                text: "“มื้ออร่อยๆ ที่เต็มไปด้วยเสียงหัวเราะ เพราะเราชอบแย่งกันกินตลอดเวลา 🍜😄”",
                 img: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80",
-                position: 75,
-                bgOffset: -60
+                chat: "“อิ่มท้องแล้ว แต่อย่าลืมดูแลตัวเองดีๆ นะคนดี ❤️”"
             }
         ];
 
-        let currentIndex = -1;
-        const boat = document.getElementById('paper-boat');
-        const scrollingBg = document.getElementById('scrollingBg');
-        const container = document.getElementById('checkpoints-container');
-        const actionBtn = document.getElementById('action-btn');
+        let currentStepIndex = 0;
+        const chatMessage = document.getElementById('chatMessage');
         const modal = document.getElementById('memory-modal');
         const modalImg = document.getElementById('modal-img');
         const modalText = document.getElementById('modal-text');
         const destScreen = document.getElementById('destination-screen');
-
-        // สร้างหมุดปักบนแผนที่
-        milestones.forEach((m, index) => {
-            const cp = document.createElement('div');
-            cp.className = 'checkpoint';
-            cp.style.left = m.position + '%';
-            cp.innerHTML = `
-                <div class="checkpoint-dot" id="dot-${index}"></div>
-                <div class="checkpoint-label">${m.title.split(':')[0]}</div>
-            `;
-            container.appendChild(cp);
-        });
 
         function startJourney() {
             document.getElementById('welcome-screen').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('welcome-screen').style.display = 'none';
             }, 800);
-            nextCheckpoint();
+            chatMessage.innerHTML = memories[0].chat;
         }
 
-        function nextCheckpoint() {
-            currentIndex++;
+        function openMemory(index) {
+            const m = memories[index];
+            modalImg.src = m.img;
+            modalText.innerHTML = `<b>${m.title}</b><br><br>${m.text}`;
+            modal.style.display = 'flex';
+        }
 
-            if (currentIndex < milestones.length) {
-                const target = milestones[currentIndex];
-                
-                // ขยับเรือไปตำแหน่งใหม่
-                boat.style.left = target.position + '%';
-                
-                // เลื่อนแบ็คกราวด์เมืองไปตามจุดแวะพัก
-                scrollingBg.style.transform = `translateX(${target.bgOffset}%)`;
-                
-                // เปลี่ยนสถานะจุดเช็คอิน
-                document.getElementById(`dot-${currentIndex}`).parentElement.classList.add('active');
-
-                // รอให้เรือแล่นไปถึงแล้วเด้งรูปความทรงจำขึ้นมา
-                setTimeout(() => {
-                    modalImg.src = target.img;
-                    modalText.innerHTML = `<b>${target.title}</b><br><br>${target.text}`;
-                    modal.style.display = 'flex';
-                }, 1200);
-
-                if (currentIndex === milestones.length - 1) {
-                    actionBtn.innerHTML = "เดินทางสู่ปลายทาง 🌅";
-                } else {
-                    actionBtn.innerHTML = "เดินทางไปจุดถัดไป ➡️";
-                }
+        function nextStep() {
+            currentStepIndex++;
+            if (currentStepIndex < memories.length) {
+                const m = memories[currentStepIndex];
+                chatMessage.innerHTML = m.chat;
+                openMemory(currentStepIndex);
             } else {
-                // ถึงปลายทาง
-                boat.style.left = '92%';
-                scrollingBg.style.transform = `translateX(-80%)`;
-                setTimeout(() => {
-                    destScreen.style.display = 'flex';
-                    startCounter();
-                }, 1000);
+                // ไปหน้าปลายทาง
+                destScreen.style.display = 'flex';
+                startCounter();
             }
         }
 
