@@ -250,7 +250,7 @@
         <!-- Start Screen -->
         <div id="start-screen">
             <h1>ปลายฝนต้นหนาว ♡</h1>
-            <p>เดินเล่นริมชายหาดพระอาทิตย์ตกกับเราและน้องหมา<br>แตะดาวทะเลเพื่อเปิดความทรงจำทั้ง 6 กันนะ...</p>
+            <p>เดินเล่นริมชายหาดพระอาทิตย์ตกลงไปพร้อมกับน้องหมา<br>แตะดาวทะเลเพื่อเปิดความทรงจำทั้ง 6 กันนะ...</p>
             <button class="start-btn" onclick="startExperience()">เริ่มต้นเรื่องราว</button>
         </div>
 
@@ -293,14 +293,13 @@
     </div>
 
     <script>
-        // ข้อมูลความทรงจำทั้ง 6 อัน (ดาวทะเลบนพื้นทราย)
         const memoriesData = [
             { id: 1, name: "ความทรงจำที่ 1", x: 0.15, imagePath: "", message: "รู้ไหมที่เราทักไปหาแกก่อน\nเพราะเราแอบชอบแก" },
-            { id: 2, name: "ความทรงจำที่ 2", x: 0.32, imagePath: "image_2.png", message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔" }, // ภาพ Minecraft จากแชท[span_0](start_span)[span_0](end_span)
+            { id: 2, name: "ความทรงจำที่ 2", x: 0.32, imagePath: "image_2.png", message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔" }, //[span_0](start_span)[span_0](end_span)
             { id: 3, name: "ความทรงจำที่ 3", x: 0.50, imagePath: "", message: "นึกว่าพึ่งเป็นเด็กเอาแต่ใจ\nที่ไหนได้เอาแต่ใจตั้งนานแล้วว่ะ 😜" },
             { id: 4, name: "ความทรงจำที่ 4", x: 0.68, imagePath: "", message: "ตอนนี้ฉันถ่ายรูปให้แก\nอุส่าห์ตั้งใจถ่ายแนะ 📸" },
             { id: 5, name: "ความทรงจำที่ 5", x: 0.85, imagePath: "", message: "ยุ่ดีๆบอลก็ขอเค้าเป็นแฟน\nในขณะที่เล่นเกม และกำลังงอนกัน 😳" },
-            { id: 6, name: "ความทรงจำที่ 6", x: 1.05, imagePath: "", message: "ขอบคุณนะ สำหรับทุกความทรงจำที่ผ่านมา\nทั้งเรื่องตลก เรื่องงอน เรื่องเล่นเกม เรื่องที่เราชอบแกล้งกัน\nเราจำได้หมดเลย ♡" }
+            { id: 6, name: "ความทรงจำที่ 6", x: 1.02, imagePath: "", message: "ขอบคุณนะ สำหรับทุกความทรงจำที่ผ่านมา\nทั้งเรื่องตลก เรื่องงอน เรื่องเล่นเกม เรื่องที่เราชอบแกล้งกัน\nเราจำได้หมดเลย ♡" }
         ];
 
         let discovered = new Array(6).fill(false);
@@ -308,7 +307,7 @@
         let cameraX = 0;
         let targetCameraX = 0;
         let worldWidth = 3200;
-        let coupleX = 180; // ตำแหน่งคู่รัก (ผญ + ผช + น้องหมา)
+        let dogX = 150; // ตำแหน่งเริ่มต้นน้องหมา
 
         const canvas = document.getElementById('beachCanvas');
         const ctx = canvas.getContext('2d');
@@ -337,9 +336,8 @@
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('uiLayer').style.display = 'flex';
             
-            // เปิดเพลง YouTube
             let ytPlayer = document.getElementById('yt-player');
-            ytPlayer.src = ytPlayer.src; // กระตุ้นการเล่นอัตโนมัติ
+            ytPlayer.src = ytPlayer.src;
 
             requestAnimationFrame(gameLoop);
         }
@@ -364,26 +362,25 @@
             if(!isStarted) return;
             time += 0.02;
 
-            // Smooth camera lerp
             cameraX += (targetCameraX - cameraX) * 0.08;
 
-            // ตัวละครคู่รัก (ผญ + ผช + น้องหมา) จะเดินตามความคืบหน้าของดาวทะเลที่กดเก็บ
+            // แก้ไขระบบคำนวณตำแหน่งน้องหมาให้เดินตามความทรงจำแต่ละจุดได้อย่างสมูท
             let count = discovered.filter(Boolean).length;
-            let targetCoupleWorldX = 180 + (count / 6) * (worldWidth - 550);
-            coupleX += (targetCoupleWorldX - coupleX) * 0.06;
+            let targetDogWorldX = 150 + (count / 6) * (memoriesData[5].x * worldWidth - 100);
+            dogX += (targetDogWorldX - dogX) * 0.06;
 
             ctx.clearRect(0, 0, width, height);
 
             // 1. ท้องฟ้าพระอาทิตย์ตก Smooth Gradient ละมุนตา
             let skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.52);
-            skyGrad.addColorStop(0, '#fbcfe8'); // ชมพูพาสเทลอ่อน
-            skyGrad.addColorStop(0.35, '#fed7aa'); // พีชส้มละมุน
-            skyGrad.addColorStop(0.7, '#fef08a'); // เหลืองนวลพระอาทิตย์
-            skyGrad.addColorStop(1, '#93c5fd'); // ฟ้าอมม่วงซอฟต์ๆ
+            skyGrad.addColorStop(0, '#fbcfe8');
+            skyGrad.addColorStop(0.35, '#fed7aa');
+            skyGrad.addColorStop(0.7, '#fef08a');
+            skyGrad.addColorStop(1, '#93c5fd');
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, width, height * 0.52);
 
-            // ดวงอาทิตย์กลมโตขอบฟ้าแสงนวลฟุ้งสมูท
+            // ดวงอาทิตย์แสงฟุ้งสมูท
             let sunX = width * 0.65 - (cameraX * 0.12);
             let sunY = height * 0.38;
             let sunGrad = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, 85);
@@ -395,17 +392,17 @@
             ctx.arc(sunX, sunY, 85, 0, Math.PI * 2);
             ctx.fill();
 
-            // 2. ทะเลพระอาทิตย์ตกไล่เฉดสี สมูทไม่แข็ง
+            // 2. ทะเลพระอาทิตย์ตกไล่เฉดสีสมูท
             let seaY = height * 0.52;
             let seaGrad = ctx.createLinearGradient(0, seaY, 0, height * 0.72);
-            seaGrad.addColorStop(0, '#f43f5e'); // ชมพูเข้มขอบฟ้า
-            seaGrad.addColorStop(0.3, '#fb7185'); // ชมพูสว่าง
-            seaGrad.addColorStop(0.6, '#38bdf8'); // ฟ้าครามสดใส
-            seaGrad.addColorStop(1, '#0284c7'); // น้ำทะเลลึก
+            seaGrad.addColorStop(0, '#f43f5e');
+            seaGrad.addColorStop(0.3, '#fb7185');
+            seaGrad.addColorStop(0.6, '#38bdf8');
+            seaGrad.addColorStop(1, '#0284c7');
             ctx.fillStyle = seaGrad;
             ctx.fillRect(0, seaY, width, height * 0.2);
 
-            // ระลอกคลื่นน้ำทะเลซัดผิวน้ำนุ่มนวล
+            // ระลอกคลื่นน้ำทะเล
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
             ctx.lineWidth = 2;
             for(let i=0; i<3; i++) {
@@ -419,7 +416,7 @@
                 ctx.stroke();
             }
 
-            // 3. หาดทรายอบอุ่นไล่เฉดสีนุ่มละมุน
+            // 3. หาดทรายอบอุ่น
             let sandY = height * 0.72;
             let sandGrad = ctx.createLinearGradient(0, sandY, 0, height);
             sandGrad.addColorStop(0, '#fef08a');
@@ -434,10 +431,10 @@
             ctx.closePath();
             ctx.fill();
 
-            // ตกแต่งริมชายหาดสุดพรีเมียม (ต้นมะพร้าว, ปราสาททราย, ปูน้อย)
+            // ตกแต่งริมชายหาด
             drawBeachDecorations(cameraX);
 
-            // ละอองแสงพาสเทลลอยในอากาศ
+            // ละอองแสงพาสเทล
             ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
             particles.forEach(p => {
                 let screenX = p.x - cameraX;
@@ -450,48 +447,43 @@
                 if(p.x < 0) p.x = worldWidth;
             });
 
-            // 4. วาดตัวละครคู่รัก (หญิง + ชาย จับมือกัน) และน้องหมาวิ่งตาม
-            let coupleScreenX = coupleX - cameraX;
-            if(coupleScreenX >= -80 && coupleScreenX <= width + 80) {
+            // 4. น้องหมาสุดน่ารักตัวเด่นเดินไปตามทาง
+            let dogScreenX = dogX - cameraX;
+            if(dogScreenX >= -60 && dogScreenX <= width + 60) {
                 ctx.save();
-                ctx.translate(coupleScreenX, height * 0.77);
-                let bounce = Math.abs(Math.sin(time * 7)) * 3;
+                ctx.translate(dogScreenX, height * 0.78);
+                let bounce = Math.abs(Math.sin(time * 8)) * 3;
                 ctx.translate(0, -bounce);
 
-                // --- ตัวละครผู้ชาย (เสื้อสูท/เสื้อยืดสีพาสเทล) ---
-                ctx.fillStyle = '#60a5fa'; // เสื้อ
-                ctx.fillRect(-14, -28, 10, 16);
-                ctx.fillStyle = '#fde047'; // หัว
+                // ตัวน้องหมา
+                ctx.fillStyle = '#fef08a';
                 ctx.beginPath();
-                ctx.arc(-9, -33, 7, 0, Math.PI * 2);
+                ctx.ellipse(0, 0, 18, 12, 0, 0, Math.PI * 2);
                 ctx.fill();
 
-                // --- ตัวละครผู้หญิง (ชุดเดรสสีชมพูพาสเทลน่ารัก) ---
-                ctx.fillStyle = '#fb7185'; // ชุด
+                // หัวน้องหมา
                 ctx.beginPath();
-                ctx.moveTo(0, -28);
-                ctx.lineTo(12, -12);
-                ctx.lineTo(-8, -12);
-                ctx.closePath();
-                ctx.fill();
-                ctx.fillStyle = '#fde047'; // หัว
-                ctx.beginPath();
-                ctx.arc(4, -33, 7, 0, Math.PI * 2);
+                ctx.arc(13, -8, 10, 0, Math.PI * 2);
                 ctx.fill();
 
-                // --- น้องหมาวิ่งตามข้างหลังคู่รัก ---
-                ctx.fillStyle = '#fef08a'; // ตัวน้องหมา
+                // หูพับน่ารัก
+                ctx.fillStyle = '#fde047';
                 ctx.beginPath();
-                ctx.ellipse(-26, -6, 11, 8, 0, 0, Math.PI * 2);
+                ctx.arc(9, -14, 5, 0, Math.PI * 2);
                 ctx.fill();
+
+                // หางดุ๊กดิ๊ก
+                ctx.strokeStyle = '#fde047';
+                ctx.lineWidth = 3;
                 ctx.beginPath();
-                ctx.arc(-18, -11, 6, 0, Math.PI * 2); // หัวน้องหมา
-                ctx.fill();
+                ctx.moveTo(-16, -3);
+                ctx.quadraticCurveTo(-26, -14 + Math.sin(time * 16) * 6, -22, -20);
+                ctx.stroke();
 
                 ctx.restore();
             }
 
-            // 5. วาด "ดาวทะเลระยิบระยับ" บนพื้นทรายแทนจุดความทรงจำ
+            // 5. ดาวทะเลระยิบระยับบนพื้นทราย
             memoriesData.forEach((mem, index) => {
                 let worldObjX = mem.x * worldWidth;
                 let screenObjX = worldObjX - cameraX;
@@ -501,19 +493,16 @@
                     ctx.save();
                     ctx.translate(screenObjX, objY);
 
-                    // แสงเรืองรองรอบดาวทะเล
                     if(!discovered[index]) {
                         let glow = Math.sin(time * 5) * 8 + 10;
                         ctx.shadowColor = '#f43f5e';
                         ctx.shadowBlur = glow;
                     }
 
-                    // วาดรูปดาวทะเล 5 แฉกพาสเทล
                     ctx.fillStyle = discovered[index] ? '#cbd5e1' : '#f43f5e';
                     drawStar(ctx, 0, 0, 5, 16, 8);
                     ctx.fill();
 
-                    // ตัวเลขดาวทะเล
                     ctx.fillStyle = '#fff';
                     ctx.font = '12px "Itim", cursive';
                     ctx.textAlign = 'center';
@@ -527,7 +516,6 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // ฟังก์ชันช่วยวาดรูปดาว (Starfish)
         function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
             let rot = Math.PI / 2 * 3;
             let x = cx;
@@ -551,14 +539,11 @@
             ctx.closePath();
         }
 
-        // ฟังก์ชันวาดองค์ประกอบริมชายหาดสวย ๆ (ต้นมะพร้าว, ปราสาททราย, ปู)
         function drawBeachDecorations(camX) {
-            // ต้นมะพร้าวพรีเมียม
             let treeX = 700 - camX;
             if(treeX > -100 && treeX < width + 100) {
                 ctx.fillStyle = '#92400e';
                 ctx.fillRect(treeX, height * 0.42, 18, height * 0.32);
-                // ใบมะพร้าวพริ้วไหว
                 ctx.fillStyle = '#059669';
                 ctx.beginPath();
                 ctx.ellipse(treeX + 9, height * 0.42, 45, 14, -0.25, 0, Math.PI * 2);
@@ -566,7 +551,6 @@
                 ctx.fill();
             }
 
-            // ปราสาททรายชายหาด
             let castleX = 1600 - camX;
             if(castleX > -100 && castleX < width + 100) {
                 ctx.fillStyle = '#d97706';
@@ -574,7 +558,6 @@
                 ctx.fillRect(castleX + 12, height * 0.62, 31, 18);
             }
 
-            // ปูน้อยเดินดุ๊กดิ๊ก
             let crabX = 2500 - camX;
             if(crabX > -50 && crabX < width + 50) {
                 ctx.fillStyle = '#e11d48';
@@ -584,7 +567,6 @@
             }
         }
 
-        // แตะที่ดาวทะเลเพื่อเปิดความทรงจำ
         canvas.addEventListener('click', (e) => {
             if(!isStarted) return;
             const rect = canvas.getBoundingClientRect();
@@ -637,7 +619,7 @@
             document.getElementById('final-screen').classList.remove('show');
             document.getElementById('progressText').innerText = `⭐ ดาวทะเล 0/6`;
             targetCameraX = 0;
-            coupleX = 180;
+            dogX = 150;
         }
     </script>
 </body>
