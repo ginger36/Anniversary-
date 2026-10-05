@@ -1,153 +1,77 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Photo - Sunset Chat Reveal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>คืนนี้ฝนตกอีกแล้วนะ...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500&family=Sarabun:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500&display=swap');
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         body {
+            background-color: #070913;
             font-family: 'Prompt', sans-serif;
-            background-color: #0b0b0b;
-            overflow: hidden;
+            color: #e2e8f0;
             height: 100vh;
+            height: 100dvh;
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
 
-        /* ฉากหลังพระอาทิตย์ตกริมทะเล */
-        .scene-container {
+        /* Mobile Container 9:16 Ratio Frame */
+        #app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100%;
+            max-height: 932px;
+            background: linear-gradient(180deg, #090d16 0%, #131b2e 50%, #1a1528 100%);
             position: relative;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(to bottom, #2b1035, #7a3b49, #d97743, #f3c68f);
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: filter 1s ease;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
         }
 
-        /* ฟิล์มเกรน (Film Grain) */
-        .film-grain {
+        @media (min-width: 434px) {
+            #app-container {
+                border-radius: 40px;
+                border: 8px solid #232d42;
+                height: 90vh;
+            }
+        }
+
+        /* Canvas Rain & Effects */
+        canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1000_Hz_noise.gif');
-            opacity: 0.04;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Film Grain Overlay */
+        .grain-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
             pointer-events: none;
             z-index: 10;
         }
 
-        /* เสียงคลื่นเบาๆ (ซ่อน audio element ไว้) */
-        #wave-audio {
-            display: none;
-        }
-
-        /* พาร์ทิเคิลสีทอง */
-        .particle {
-            position: absolute;
-            background: radial-gradient(circle, #fff7d6 0%, rgba(255, 215, 0, 0) 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: floatParticle linear infinite;
-            z-index: 2;
-        }
-
-        @keyframes floatParticle {
-            0% {
-                transform: translateY(100vh) translateX(0);
-                opacity: 0;
-            }
-            50% {
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(-20vh) translateX(50px);
-                opacity: 0;
-            }
-        }
-
-        /* Background พื้นทรายด้านล่างและผ้าปู */
-        .beach-ground {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 40%;
-            background: linear-gradient(to top, #b88653, #d2a679, rgba(210, 166, 121, 0));
-            z-index: 1;
-        }
-
-        /* ผ้าปูชายหาด */
-        .beach-mat {
-            position: absolute;
-            bottom: 15%;
-            left: 50%;
-            transform: translateX(-50%) rotateX(60deg);
-            width: 220px;
-            height: 140px;
-            background: #e8d7c1;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            z-index: 2;
-        }
-
-        /* รูปถ่ายโพลารอยด์บนฉาก (ตำแหน่งเริ่มต้น) */
-        .polaroid-frame {
-            position: absolute;
-            bottom: 25%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 110px;
-            background: #fff;
-            padding: 8px 8px 25px 8px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            cursor: pointer;
-            z-index: 3;
-            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            border-radius: 3px;
-        }
-
-        .polaroid-frame img {
-            width: 100%;
-            display: block;
-            border-bottom: 1px solid #eee;
-        }
-
-        /* เครื่องหมายหัวใจเหนือรูปเมื่อเปิดแล้ว */
-        .opened-heart-badge {
-            position: absolute;
-            bottom: 38%;
-            left: 50%;
-            transform: translateX(-50%) scale(0);
-            font-size: 24px;
-            color: #ff4d6d;
-            z-index: 4;
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-
-        .opened-heart-badge.show {
-            transform: translateX(-50%) scale(1);
-        }
-
-        /* เมื่อฉากหลังเบลอ */
-        .scene-container.blurred {
-            filter: blur(6px);
-        }
-
-        /* คอนเทนต์เมื่อคลิกเปิดความทรงจำ */
-        .memory-overlay {
+        /* Scene Layouts */
+        .scene {
             position: absolute;
             top: 0;
             left: 0;
@@ -155,277 +79,622 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
+            justify-content: space-between;
+            padding: 40px 24px;
+            z-index: 5;
             opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
+            visibility: hidden;
+            transition: opacity 1s ease, transform 1s ease;
+            transform: scale(0.98);
         }
 
-        .memory-overlay.active {
+        .scene.active {
             opacity: 1;
-            pointer-events: auto;
+            visibility: visible;
+            transform: scale(1);
         }
 
-        /* รูปโพลารอยด์ตอนขยายขึ้นตรงกลาง */
-        .memory-polaroid {
-            width: 180px;
-            background: #fff;
-            padding: 10px 10px 30px 10px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-            border-radius: 4px;
-            transform: scale(0.5) translateY(50px);
-            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-        }
-
-        .memory-overlay.active .memory-polaroid {
-            transform: scale(1) translateY(0);
-        }
-
-        .memory-polaroid img {
+        /* Background Illustration Styles */
+        .bg-illustration {
+            position: absolute;
+            bottom: 0;
+            left: 0;
             width: 100%;
-            display: block;
+            height: 60%;
+            z-index: 1;
+            pointer-events: none;
         }
 
-        /* แสงสีทองส่องผ่านรูป */
-        .sun-glow-overlay {
+        /* Top Audio Controller */
+        .top-bar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            transition: background 0.3s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Typography & UI Components */
+        h1, h2, p {
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+        }
+
+        .story-text {
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: #d1d5db;
+            font-weight: 300;
+        }
+
+        .glow-btn {
+            background: linear-gradient(135deg, #f6ad55, #ed8936);
+            color: #1a202c;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(237, 137, 54, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 0 auto;
+            display: block;
+            z-index: 20;
+        }
+
+        .glow-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Clickable Hotspots in Scene 1 & 5 */
+        .hotspot {
+            position: absolute;
+            cursor: pointer;
+            z-index: 15;
+            transition: transform 0.3s;
+        }
+        .hotspot:hover {
+            transform: scale(1.05);
+        }
+
+        /* Modal & Popups (Polaroid & Letter) */
+        .modal-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 50% 20%, rgba(255, 215, 0, 0.4) 0%, rgba(255, 140, 0, 0) 70%);
-            mix-blend-mode: overlay;
-            pointer-events: none;
-        }
-
-        /* หัวใจลอยขึ้นมาตอนเปิด */
-        .floating-heart {
-            position: absolute;
-            color: #ff4d6d;
-            font-size: 20px;
-            animation: floatUpHearts 2s ease-out forwards;
+            background: rgba(5, 7, 12, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 30;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             opacity: 0;
-            z-index: 25;
+            visibility: hidden;
+            transition: opacity 0.4s ease;
         }
 
-        @keyframes floatUpHearts {
-            0% {
-                transform: translateY(0) scale(0.5);
-                opacity: 0;
-            }
-            20% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-120px) scale(1.2);
-                opacity: 0;
-            }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
         }
 
-        /* กล่องข้อความ */
-        .message-box {
-            margin-top: 20px;
+        /* Polaroid Frame */
+        .polaroid {
+            background: #fdfbf7;
+            padding: 16px 16px 40px 16px;
+            width: 260px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            transform: scale(0.8) rotate(-3deg);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            color: #2d3748;
             text-align: center;
-            color: #fff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-            max-width: 320px;
-            padding: 0 15px;
         }
 
-        .msg-line {
+        .modal-overlay.show .polaroid {
+            transform: scale(1) rotate(-2deg);
+        }
+
+        .polaroid::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.6);
+            border-left: 2px dashed rgba(0,0,0,0.1);
+            border-right: 2px dashed rgba(0,0,0,0.1);
+        }
+
+        .polaroid-img {
+            width: 100%;
+            height: 200px;
+            background: #2d3748;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .polaroid-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .polaroid-caption {
+            margin-top: 16px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1.1rem;
+            color: #4a5568;
+        }
+
+        /* Envelope & Letter Frame */
+        .letter-container {
+            width: 300px;
+            background: #f4eee1;
+            padding: 30px 24px;
+            border-radius: 4px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            color: #2c2c2c;
+            font-family: 'Sarabun', sans-serif;
+            position: relative;
+            transform: translateY(30px);
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease;
-            font-size: 16px;
-            font-weight: 300;
-            line-height: 1.6;
-            margin-bottom: 6px;
-        }
-
-        .msg-line.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .msg-line.highlight {
-            font-weight: 500;
-            color: #ffeb99;
-        }
-
-        /* บรรทัดเพิ่มเติมตอนอ่านจบ */
-        .extra-msg-line {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease;
-            font-size: 14px;
-            font-weight: 300;
-            line-height: 1.5;
-            color: #f1f1f1;
-            margin-top: 15px;
-        }
-
-        .extra-msg-line.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* ปุ่มเก็บความทรงจำ */
-        .save-btn {
-            margin-top: 18px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            color: #fff;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-family: 'Prompt', sans-serif;
-            font-size: 13px;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-            opacity: 0;
-            transform: translateY(15px);
             transition: all 0.5s ease;
-            outline: none;
         }
 
-        .save-btn.visible {
-            opacity: 1;
+        .modal-overlay.show .letter-container {
             transform: translateY(0);
+            opacity: 1;
         }
 
-        .save-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: scale(1.05);
+        .letter-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            white-space: pre-line;
+            min-height: 150px;
+        }
+
+        /* Progress tracker */
+        .progress-indicator {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+            z-index: 20;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        /* City CSS Graphics for Scene Backgrounds */
+        .city-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 45%;
+            background-image: 
+                linear-gradient(0deg, rgba(13,19,34,0.9), transparent),
+                /* Buildings silhouette vector simulation */
+                radial-gradient(circle at 20% 40%, #f6ad55 2px, transparent 2px),
+                radial-gradient(circle at 80% 30%, #f6ad55 2px, transparent 2px);
+            z-index: 2;
+        }
+        
+        .reflection-road {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 25%;
+            background: linear-gradient(180deg, rgba(15,23,42,0.8) 0%, rgba(7,9,19,0.95) 100%);
+            border-top: 1px solid rgba(246, 173, 85, 0.2);
+            z-index: 3;
+        }
+
+        .hint-pulse {
+            animation: pulseGlow 2s infinite;
+        }
+        @keyframes pulseGlow {
+            0% { filter: drop-shadow(0 0 2px rgba(246,173,85,0.4)); }
+            50% { filter: drop-shadow(0 0 10px rgba(246,173,85,0.9)); }
+            100% { filter: drop-shadow(0 0 2px rgba(246,173,85,0.4)); }
         }
     </style>
 </head>
 <body>
 
-    <!-- ฉากหลังหลัก (บรรยากาศพระอาทิตย์ตก) -->
-    <div class="scene-container" id="scene">
-        <div class="film-grain"></div>
-        <div class="beach-ground"></div>
-        <div class="beach-mat"></div>
+    <div id="app-container">
+        <!-- Film grain texture -->
+        <div class="grain-overlay"></div>
 
-        <!-- รูปถ่ายโพลารอยด์ในฉาก (Interactive Object) -->
-        <div class="polaroid-frame" id="polaroidObj" onclick="openMemory()">
-            <img src="https://i.postimg.cc/MKCVk1Zs/line-oa-chat-261005-131012.jpg" alt="Memory Chat">
+        <!-- Rain & Particle Canvas -->
+        <canvas id="rainCanvas"></canvas>
+
+        <!-- Top Bar Audio & Mute -->
+        <div class="top-bar">
+            <button class="icon-btn" id="audioToggle">🔊 เสียงฝน</button>
         </div>
 
-        <!-- เครื่องหมายหัวใจเหนือรูปเมื่อถูกเก็บความทรงจำแล้ว -->
-        <div class="opened-heart-badge" id="heartBadge">❤️</div>
-    </div>
-
-    <!-- ส่วนแสดงผลความทรงจำแบบโต้ตอบ (Overlay) -->
-    <div class="memory-overlay" id="memoryOverlay">
-        <div class="memory-polaroid">
-            <div class="sun-glow-overlay"></div>
-            <img src="https://i.postimg.cc/MKCVk1Zs/line-oa-chat-261005-131012.jpg" alt="Memory Chat Expanded">
+        <!-- ================= PAGE HOME ================= -->
+        <div class="scene active" id="scene-home">
+            <div style="flex: 1;"></div>
+            <div style="text-align: center; z-index: 10;">
+                <p class="story-text" style="font-size: 1.4rem; margin-bottom: 30px;">"คืนนี้ฝนตกอีกแล้วนะ..."</p>
+                <button class="glow-btn" onclick="goToScene(1)">เข้าไปดู</button>
+            </div>
+            <div style="flex: 1;"></div>
         </div>
 
-        <div class="message-box">
-            <div class="msg-line" id="line1">รู้ป้ะ</div>
-            <div class="msg-line" id="line2">ที่เราทักไปหาแกก่อน</div>
-            <div class="msg-line highlight" id="line3">เพราะเราแอบชอบแก</div>
-            <div class="msg-line" id="line4">ในสถานที่แรกกก</div>
-
-            <div class="extra-msg-line" id="line5">
-                ตอนนั้นยังไม่รู้เลยว่า<br>
-                การทักไปครั้งนั้น<br>
-                จะทำให้เรามีความทรงจำเยอะขนาดนี้
+        <!-- ================= SCENE 1 : STREET & INTERACTIONS ================= -->
+        <div class="scene" id="scene-1">
+            <div style="padding-top: 20px; text-align: center;">
+                <p class="story-text" id="s1-hint">แตะสิ่งของรอบตัว เพื่อค้นหาความทรงจำ...</p>
             </div>
 
-            <button class="save-btn" id="saveBtn" onclick="closeMemory()">เก็บความทรงจำนี้ไว้ ♡</button>
+            <!-- Interactive Hotspots elements placed in city -->
+            <div style="position: relative; width: 100%; height: 60%; flex-grow: 1;">
+                <!-- Window Light -->
+                <div class="hotspot hint-pulse" style="top: 20%; left: 15%; width: 60px; height: 80px; background: rgba(246,173,85,0.3); border-radius: 4px; border: 1px solid #f6ad55;" onclick="openPolaroid('window')">
+                    <span style="font-size: 10px; color: #f6ad55; position: absolute; bottom: -20px; left: 5px;">หน้าต่างอุ่นๆ</span>
+                </div>
+
+                <!-- Coffee Shop Sign -->
+                <div class="hotspot hint-pulse" style="top: 35%; right: 20%; width: 70px; height: 50px; background: rgba(237,137,54,0.2); border-radius: 8px; border: 1px solid #ed8936; display: flex; align-items: center; justify-content: center;" onclick="openPolaroid('cafe')">
+                    <span style="font-size: 10px; color: #ed8936;">ร้านกาแฟ</span>
+                </div>
+
+                <!-- Envelope on street -->
+                <div class="hotspot hint-pulse" style="bottom: 15%; left: 45%; width: 50px; height: 35px; background: #f4eee1; border-radius: 4px; box-shadow: 0 0 10px rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center;" onclick="goToScene(3)">
+                    <span style="font-size: 9px; color: #333; font-weight: bold;">จดหมาย</span>
+                </div>
+            </div>
+
+            <div style="text-align: center; padding-bottom: 20px;">
+                <button class="icon-btn" onclick="goToScene(2)">ดูรูปโพลารอยด์หลัก</button>
+            </div>
+        </div>
+
+        <!-- ================= SCENE 2 : POLAROID VIEW ================= -->
+        <div class="modal-overlay show" id="modal-polaroid" style="display: none;">
+            <div class="polaroid" onclick="closePolaroid()">
+                <div class="polaroid-img">
+                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #2c3e50, #3498db); display:flex; align-items:center; justify-content:center; color: #fff; font-size: 14px;">
+                        ☕ Rainy Window
+                    </div>
+                </div>
+                <div class="polaroid-caption">
+                    "ฝนตกแบบนี้ เปียกหรือเปล่า<br>อย่าลืมพกร่มนะ"
+                </div>
+                <div style="font-size: 10px; color: #a0aec0; margin-top: 10px;">(แตะเพื่อปิดกลับไป)</div>
+            </div>
+        </div>
+
+        <!-- ================= SCENE 3 : LETTER VIEW ================= -->
+        <div class="scene" id="scene-3">
+            <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+                <div class="letter-container">
+                    <p style="text-align: right; font-size: 0.85rem; color: #718096; margin-bottom: 10px;">ซองจดหมายสีเก่า</p>
+                    <div class="letter-text" id="typewriter-box"></div>
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button class="glow-btn" id="s3-next-btn" style="display:none; padding: 8px 20px; font-size: 0.9rem;" onclick="goToScene(4)">พับจดหมายเก็บ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCENE 4 : RAIN STOPS ================= -->
+        <div class="scene" id="scene-4">
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <p class="story-text" style="font-size: 1.4rem; margin-bottom: 20px;" id="s4-text-1">ฝนหยุดแล้ว</p>
+                <p class="story-text" style="font-size: 1.1rem; color: #a0aec0; margin-bottom: 40px; opacity: 0;" id="s4-text-2">แต่ดูเหมือนทุกอย่างที่คิดถึง<br>ยังไม่เคยหายไปไหน</p>
+                <button class="glow-btn" style="opacity: 0; pointer-events: none;" id="s4-btn" onclick="goToScene(5)">ออกไปเดินเล่นกัน</button>
+            </div>
+        </div>
+
+        <!-- ================= SCENE 5 : DISCOVER MEMORIES ================= -->
+        <div class="scene" id="scene-5">
+            <div class="progress-indicator" id="progress-text">ความทรงจำ 0/3</div>
+            <div style="flex: 1; position: relative;">
+                <p style="text-align: center; margin-top: 50px; font-size: 0.95rem; color: #cbd5e1;">แตะรูปความทรงจำที่ลอยอยู่รอบตัวให้ครบ</p>
+                
+                <!-- Floating Memory Items -->
+                <div class="hotspot hint-pulse" style="top: 30%; left: 20%; background: #fff; padding: 8px; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" onclick="collectMemory(0, 'ร้านกาแฟที่เราเคยนั่งหลบฝนด้วยกัน')">
+                    <div style="width: 60px; height: 50px; background: #cbd5e1; font-size: 9px; color: #333; display: flex; align-items: center; justify-content: center;">☕ รูปที่ 1</div>
+                </div>
+                
+                <div class="hotspot hint-pulse" style="top: 50%; right: 25%; background: #fff; padding: 8px; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" onclick="collectMemory(1, 'ร่มคันสีเหลืองที่เคยใช้ร่วมกัน')">
+                    <div style="width: 60px; height: 50px; background: #cbd5e1; font-size: 9px; color: #333; display: flex; align-items: center; justify-content: center;">☂️ รูปที่ 2</div>
+                </div>
+
+                <div class="hotspot hint-pulse" style="top: 70%; left: 35%; background: #fff; padding: 8px; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" onclick="collectMemory(2, 'ข้อความสั้นๆ ที่เธอเคยเขียนให้')">
+                    <div style="width: 60px; height: 50px; background: #cbd5e1; font-size: 9px; color: #333; display: flex; align-items: center; justify-content: center;">💌 รูปที่ 3</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= FINAL SCENE : CONFESSION ================= -->
+        <div class="scene" id="scene-final">
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px;">
+                <div id="final-text-box" style="margin-bottom: 40px; min-height: 120px;">
+                    <!-- Appended by JS -->
+                </div>
+                <div id="final-buttons" style="opacity: 0; transition: opacity 1s; display: flex; gap: 15px; flex-direction: column; width: 100%;">
+                    <button class="glow-btn" onclick="goToScene(1)" style="width: 100%;">อ่านข้อความอีกครั้ง</button>
+                    <button class="icon-btn" onclick="goToScene(0)" style="width: 100%; padding: 12px; border-radius: 30px;">เริ่มใหม่ตั้งแต่ต้น</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Generic Modal for Memories -->
+    <div class="modal-overlay" id="memory-modal" onclick="closeMemoryModal()">
+        <div class="polaroid">
+            <div class="polaroid-caption" id="memory-modal-text" style="font-size: 1.2rem; padding: 20px 0;">
+                ข้อความความทรงจำ
+            </div>
+            <div style="font-size: 10px; color: #a0aec0;">(แตะเพื่อปิด)</div>
         </div>
     </div>
 
-    <!-- เสียงคลื่นประกอบบรรยากาศ (สามารถใส่ลิงก์เสียงคลื่นจริงได้ที่ src) -->
-    <audio id="wave-audio" loop>
-        <source src="https://actions.google.com/sounds/v1/ambiences/ocean_waves.ogg" type="audio/ogg">
-    </audio>
-
     <script>
-        // สร้าง Particle สีทองลอยอัตโนมัติ
-        const scene = document.getElementById('scene');
-        for (let i = 0; i < 25; i++) {
-            const particle = document.createElement('div');
-            particle.classList.add('particle');
-            const size = Math.random() * 5 + 2;
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            particle.style.left = `${Math.random() * 100}vw`;
-            particle.style.animationDuration = `${Math.random() * 6 + 4}s`;
-            particle.style.animationDelay = `${Math.random() * 5}s`;
-            scene.appendChild(particle);
-        }
+        // --- SCENE NAVIGATION CONTROLLER ---
+        let currentScene = 0;
+        let collectedCount = 0;
+        let collectedFlags = [false, false, false];
 
-        // ฟังก์ชันเมื่อกดเปิดความทรงจำ
-        function openMemory() {
-            // เล่นเสียงคลื่น (ถ้าเบราว์เซอร์อนุญาต)
-            const audio = document.getElementById('wave-audio');
-            audio.play().catch(e => console.log("Audio autoplay restricted:", e));
-
-            // 1 & 3. ฉากหลังเบลอและแสดง Overlay
-            document.getElementById('scene').classList.add('blurred');
-            document.getElementById('memoryOverlay').classList.add('active');
-
-            // 6. สร้างหัวใจเล็กๆ ลอยขึ้นมา 2-3 ดวง
-            createFloatingHearts();
-
-            // 7. แสดงข้อความทีละบรรทัด (Fade-in + Slide-up)
-            setTimeout(() => { document.getElementById('line1').classList.add('visible'); }, 400);
-            setTimeout(() => { document.getElementById('line2').classList.add('visible'); }, 1000);
-            setTimeout(() => { document.getElementById('line3').classList.add('visible'); }, 1600);
-            setTimeout(() => { 
-                document.getElementById('line4').classList.add('visible'); 
-                // แสดงข้อความส่วนที่สองต่อทันทีหลังจากบรรทัดสุดท้ายขึ้น
-                setTimeout(() => {
-                    document.getElementById('line5').classList.add('visible');
-                }, 800);
-                // แสดงปุ่มหลังจากข้อความทั้งหมดขึ้นครบ
-                setTimeout(() => {
-                    document.getElementById('saveBtn').classList.add('visible');
-                }, 1600);
-            }, 2200);
-        }
-
-        // ฟังก์ชันสร้างหัวใจลอย
-        function createFloatingHearts() {
-            const overlay = document.getElementById('memoryOverlay');
-            for (let i = 0; i < 3; i++) {
-                setTimeout(() => {
-                    const heart = document.createElement('div');
-                    heart.classList.add('floating-heart');
-                    heart.innerHTML = '❤️';
-                    heart.style.left = `calc(50% + ${(Math.random() - 0.5) * 80}px)`;
-                    heart.style.bottom = `35%`;
-                    overlay.appendChild(heart);
-                    
-                    // ลบ element ทิ้งหลังอนิเมชันจบ
-                    setTimeout(() => heart.remove(), 2000);
-                }, i * 350);
+        function goToScene(sceneIndex) {
+            document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+            document.getElementById('modal-polaroid').classList.remove('show');
+            
+            const target = document.getElementById(sceneIndex === 'final' ? 'scene-final' : `scene-${sceneIndex}`);
+            if (target) {
+                target.classList.add('active');
+                currentScene = sceneIndex;
+                
+                // Trigger scene specific animations
+                if (sceneIndex === 3) {
+                    startTypewriter();
+                } else if (sceneIndex === 4) {
+                    runScene4Animations();
+                } else if (sceneIndex === 'final') {
+                    runFinalSceneAnimations();
+                }
             }
         }
 
-        // เมื่อกดปุ่ม "เก็บความทรงจำนี้ไว้ ♡"
-        function closeMemory() {
-            // ซ่อน Overlay และยกเลิกการเบลอฉากหลัง
-            document.getElementById('scene').classList.remove('blurred');
-            document.getElementById('memoryOverlay').classList.remove('active');
-
-            // แสดงสัญลักษณ์หัวใจเหนือรูปในฉากหลัก
-            setTimeout(() => {
-                document.getElementById('heartBadge').classList.add('show');
-            }, 400);
-
-            // รีเซ็ตข้อความให้กลับมาซ่อนไว้เหมือนเดิม (เผื่อกดเข้ามาดูซ้ำ)
-            setTimeout(() => {
-                const lines = document.querySelectorAll('.msg-line, .extra-msg-line, .save-btn');
-                lines.forEach(el => el.classList.remove('visible'));
-            }, 600);
+        // --- POLAROID MODAL (SCENE 1) ---
+        function openPolaroid(type) {
+            document.getElementById('modal-polaroid').classList.add('show');
         }
+        function closePolaroid() {
+            document.getElementById('modal-polaroid').classList.remove('show');
+        }
+
+        // --- TYPEWRITER EFFECT (SCENE 3) ---
+        const letterContent = "ถึง มินท์\n\nฝนตกทุกวันเลย\nช่วงนี้เธอเป็นยังไงบ้าง\n\nคิดถึงนะ...";
+        let twIndex = 0;
+        function startTypewriter() {
+            const box = document.getElementById('typewriter-box');
+            box.innerHTML = "";
+            twIndex = 0;
+            document.getElementById('s3-next-btn').style.display = 'none';
+            
+            function type() {
+                if (twIndex < letterContent.length) {
+                    box.innerHTML += letterContent.charAt(twIndex) === '\n' ? '<br>' : letterContent.charAt(twIndex);
+                    twIndex++;
+                    setTimeout(type, 70);
+                } else {
+                    document.getElementById('s3-next-btn').style.display = 'block';
+                }
+            }
+            type();
+        }
+
+        // --- SCENE 4 ANIMATIONS ---
+        function runScene4Animations() {
+            // Gradually reduce rain density via global variable if desired
+            setTimeout(() => {
+                document.getElementById('s4-text-2').style.opacity = '1';
+                document.getElementById('s4-text-2').style.transition = 'opacity 1.5s ease';
+            }, 1500);
+            setTimeout(() => {
+                const btn = document.getElementById('s4-btn');
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+                btn.style.transition = 'opacity 1.5s ease';
+            }, 3500);
+        }
+
+        // --- MEMORY COLLECTION (SCENE 5) ---
+        function collectMemory(index, text) {
+            if (!collectedFlags[index]) {
+                collectedFlags[index] = true;
+                collectedCount++;
+                document.getElementById('progress-text').innerText = `ความทรงจำ ${collectedCount}/3`;
+            }
+            document.getElementById('memory-modal-text').innerText = text;
+            document.getElementById('memory-modal').classList.add('show');
+
+            if (collectedCount === 3) {
+                setTimeout(() => {
+                    alert("คุณค้นพบความทรงจำทั้งหมดแล้ว บรรยากาศอบอุ่นกำลังเริ่มขึ้น...");
+                    goToScene('final');
+                }, 1200);
+            }
+        }
+
+        function closeMemoryModal() {
+            document.getElementById('memory-modal').classList.remove('show');
+        }
+
+        // --- FINAL SCENE ANIMATIONS ---
+        function runFinalSceneAnimations() {
+            const textBox = document.getElementById('final-text-box');
+            textBox.innerHTML = "";
+            const lines = [
+                "รู้ไหม...",
+                "ที่เราทักไปหาแกก่อน",
+                "เพราะเราแอบชอบแก...",
+                "ตั้งแต่ครั้งแรกที่เจอเลยนะ ❤️"
+            ];
+            
+            let lineIdx = 0;
+            function showLine() {
+                if (lineIdx < lines.length) {
+                    const p = document.createElement('p');
+                    p.className = 'story-text';
+                    p.style.fontSize = lineIdx === 3 ? '1.3rem' : '1.1rem';
+                    p.style.color = lineIdx === 3 ? '#f6ad55' : '#e2e8f0';
+                    p.style.marginBottom = '12px';
+                    p.style.opacity = '0';
+                    p.style.transform = 'translateY(10px)';
+                    p.style.transition = 'all 0.8s ease';
+                    p.innerText = lines[lineIdx];
+                    textBox.appendChild(p);
+                    
+                    setTimeout(() => {
+                        p.style.opacity = '1';
+                        p.style.transform = 'translateY(0)';
+                    }, 50);
+
+                    lineIdx++;
+                    setTimeout(showLine, 1200);
+                } else {
+                    document.getElementById('final-buttons').style.opacity = '1';
+                }
+            }
+            setTimeout(showLine, 500);
+        }
+
+        // --- CANVAS RAIN ANIMATION SYSTEM ---
+        const canvas = document.getElementById('rainCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let raindrops = [];
+        const maxDrops = 60;
+
+        for (let i = 0; i < maxDrops; i++) {
+            raindrops.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                length: Math.random() * 20 + 10,
+                speed: Math.random() * 7 + 8,
+                opacity: Math.random() * 0.4 + 0.2
+            });
+        }
+
+        function animateRain() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw rain if scene 4 is not active or fading out rain
+            ctx.lineWidth = 1.5;
+            for (let drop of raindrops) {
+                ctx.strokeStyle = `rgba(174, 214, 241, ${currentScene === 4 ? drop.opacity * 0.3 : drop.opacity})`;
+                ctx.beginPath();
+                ctx.moveTo(drop.x, drop.y);
+                ctx.lineTo(drop.x - 1, drop.y + drop.length);
+                ctx.stroke();
+
+                drop.y += drop.speed;
+                drop.x -= 0.5;
+
+                if (drop.y > canvas.height) {
+                    drop.y = -20;
+                    drop.x = Math.random() * canvas.width;
+                }
+            }
+            requestAnimationFrame(animateRain);
+        }
+        animateRain();
+
+        // --- AUDIO AMBIENCE SIMULATOR (Web Audio API) ---
+        let audioCtx = null;
+        let isAudioPlaying = false;
+        let noiseNode = null;
+
+        document.getElementById('audioToggle').addEventListener('click', function() {
+            if (!isAudioPlaying) {
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    // Create white noise for rain sound effect
+                    const bufferSize = 2 * audioCtx.sampleRate;
+                    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        output[i] = Math.random() * 2 - 1;
+                    }
+
+                    noiseNode = audioCtx.createBufferSource();
+                    noiseNode.buffer = noiseBuffer;
+                    noiseNode.loop = true;
+
+                    // Filter to make it sound like soft rain (lowpass filter)
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 800;
+
+                    const gainNode = audioCtx.createGain();
+                    gainNode.gain.value = 0.15;
+
+                    noiseNode.connect(filter);
+                    filter.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+
+                    noiseNode.start();
+                    isAudioPlaying = true;
+                    this.innerText = "🔇 ปิดเสียงฝน";
+                } catch(e) {
+                    console.log("Audio not supported or blocked", e);
+                }
+            } else {
+                if (noiseNode) {
+                    noiseNode.stop();
+                }
+                if (audioCtx) {
+                    audioCtx.close();
+                }
+                isAudioPlaying = false;
+                this.innerText = "🔊 เสียงฝน";
+            }
+        });
     </script>
 </body>
 </html>
