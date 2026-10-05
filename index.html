@@ -270,7 +270,7 @@
             { id: 3, name: "ความทรงจำที่ 3", x: 0.52, imagePath: "https://i.postimg.cc/02M0FYnp/line-oa-chat-261005-174318.jpg", message: "นึกว่าพึ่งเป็นเด็กเอาแต่ใจ\nที่ไหนได้เอาแต่ใจตั้งนานแล้วว่ะ 😜" },
             { id: 4, name: "ความทรงจำที่ 4", x: 0.69, imagePath: "https://i.postimg.cc/CLBsXG7b/line-oa-chat-261005-174934.jpg", message: "ตอนนี้ฉันถ่ายรูปให้แก\nอุส่าห์ตั้งใจถ่ายแนะ 📸" },
             { id: 5, name: "ความทรงจำที่ 5", x: 0.86, imagePath: "https://i.postimg.cc/L6Y3wtDk/line-oa-chat-261005-175008.jpg", message: "ยุ่ดีๆบอลก็ขอเค้าเป็นแฟน\nในขณะที่เล่นเกม และกำลังงอนกัน 😳" },
-            { id: 6, name: "ความทรงจำที่ 6 🌸", x: 1.02, imagePath: "", message: "ตั้งแต่ตอนที่เราได้รู้จักกัน เรารู้จักกันมา 2 เดือน\nและตกลงที่จะคบกันใน วันที่ 5 เมษา 2569\nและเราคบกันมาได้ 6 เดือน เรารู้จักกันมาได้ 8 เดือนเลยน้า\n\nและวันนี้เป็น วันครบรอบเดือน 6 ของเรา ผักบุ้งดีใจมากน้าที่ได้บอลมาเป็นแฟนผักบุ้ง ถึงเราจะเกือบเลิกกันหลายครั้งแต่ผักบุ้งไม่เคยคิดจะทิ้งบอลนะ เพราะเรามันเท่ไงหึๆๆ ผู้บุ้งหวังว่าจะได้เห็นบอลยิ้มเยอะๆในทุกๆเดือนน้า ՞•･•՞🐾" }
+            { id: 6, name: "ความทรงจำที่ 6 🌸", x: 1.02, imagePath: "", message: "ตั้งแต่ตอนที่เราได้รู้จักกัน เรารู้จักกันมา 2 เดือน\nและตกลงที่จะคบกันใน วันที่ 5 เมษา 2569\nและเราคบกันมาได้ 6 เดือน เรารู้จักกันมาได้ 8 เดือนเลยน้า\n\nและวันนี้เป็น วันครบรอบเดือน 6 ของเรา ผักบุ้งดีใจมากน้าที่ได้บอลมาเป็นแฟนผักบุ้ง ถึงเราจะเกือบเลิกกันหลายครั้งแต่ผักบุ้งไม่เคยคิดจะทิ้งนะ เพราะเรามันเท่ไงหึๆๆ ผู้บุ้งหวังว่าจะได้เห็นบอลยิ้มเยอะๆในทุกๆเดือนน้า ՞•･•՞🐾" }
         ];
 
         let currentStep = 0;
@@ -342,7 +342,6 @@
 
             ctx.clearRect(0, 0, width, height);
 
-            // 1. ท้องฟ้าพระอาทิตย์ตก
             let skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.52);
             skyGrad.addColorStop(0, '#fbcfe8');
             skyGrad.addColorStop(0.35, '#fed7aa');
@@ -362,7 +361,6 @@
             ctx.arc(sunX, sunY, 85, 0, Math.PI * 2);
             ctx.fill();
 
-            // 2. ทะเล
             let seaY = height * 0.52;
             let seaGrad = ctx.createLinearGradient(0, seaY, 0, height * 0.72);
             seaGrad.addColorStop(0, '#f43f5e');
@@ -385,7 +383,6 @@
                 ctx.stroke();
             }
 
-            // 3. หาดทราย
             let sandY = height * 0.72;
             let sandGrad = ctx.createLinearGradient(0, sandY, 0, height);
             sandGrad.addColorStop(0, '#fef08a');
@@ -414,7 +411,6 @@
                 if(p.x < 0) p.x = worldWidth;
             });
 
-            // 4. น้องหมา
             let dogScreenX = dogX - cameraX;
             if(dogScreenX >= -80 && dogScreenX <= width + 80) {
                 ctx.save();
@@ -449,7 +445,6 @@
                 ctx.restore();
             }
 
-            // 5. จุดความทรงจำ (1-5 เป็นดาว, จุดที่ 6 เป็นดอกไม้บาน)
             memoriesData.forEach((mem, index) => {
                 let worldObjX = mem.x * worldWidth;
                 let screenObjX = worldObjX - cameraX;
