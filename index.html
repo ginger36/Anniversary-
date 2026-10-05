@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Sunset Journey ❤️</title>
+    <title>Our Sunset Journey ❤️️</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&family=Sacramento&display=swap" rel="stylesheet">
     <style>
         * {
@@ -75,7 +75,7 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
 
-        /* หน้าจอหลัก (ฉากเมืองยามพระอาทิตย์ตก) */
+        /* หน้าจอหลัก (กรอบมือถือ) */
         #main-container {
             position: relative;
             width: 100vw;
@@ -88,17 +88,19 @@
             border-radius: 30px;
         }
 
-        /* ตึกและฉากหลัง */
-        .city-skyline {
+        /* เลเยอร์ฉากหลังตึกที่จะเลื่อนขยับได้ */
+        .scrolling-bg {
             position: absolute;
             bottom: 35%;
-            width: 100%;
+            left: 0;
+            width: 300%; /* ยาวกว่าหน้าจอเพื่อให้เลื่อนแพนกล้องได้ */
             height: 45%;
-            background-image: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=600&q=80');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.25;
+            background-image: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1200&q=80');
+            background-size: repeat-x;
+            background-position: bottom;
+            opacity: 0.3;
             z-index: 1;
+            transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         /* สายน้ำยามเย็น */
@@ -145,7 +147,6 @@
             transform: translateX(-50%);
             z-index: 4;
             text-align: center;
-            cursor: pointer;
         }
 
         .checkpoint-dot {
@@ -177,7 +178,7 @@
             white-space: nowrap;
         }
 
-        /* เรือกระดาษที่เคลื่อนที่ได้ */
+        /* เรือกระดาษที่เคลื่อนที่ไปพร้อมกับแบ็คกราวด์ */
         #paper-boat {
             position: absolute;
             bottom: 19%;
@@ -189,7 +190,7 @@
             filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4));
         }
 
-        /* โพลารอยด์ความทรงจำ (Pop-up การเดินทาง) */
+        /* โพลารอยด์ความทรงจำ (Pop-up) */
         #memory-modal {
             position: absolute;
             top: 0;
@@ -215,7 +216,6 @@
             text-align: center;
             transform: scale(0.8);
             animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            position: relative;
         }
 
         @keyframes popIn {
@@ -334,9 +334,10 @@
         <button class="btn-start" onclick="startJourney()">กดเพื่อออกเดินทาง ⛵</button>
     </div>
 
-    <!-- หน้าจอหลัก (จำลองมือถือ/หน้าจอเว็บ) -->
+    <!-- หน้าจอหลัก -->
     <div id="main-container">
-        <div class="city-skyline"></div>
+        <!-- แบ็คกราวด์ตึกที่จะเลื่อนตามการเดินทาง -->
+        <div class="scrolling-bg" id="scrollingBg"></div>
         
         <div class="river">
             <div class="wave"></div>
@@ -369,37 +370,41 @@
             <div class="dest-box">
                 <div class="counter-text" id="counter">กำลังคำนวณเวลา...</div>
             </div>
-            <div class="dest-box" style="font-size: 0.95kr; line-height: 1.7;">
+            <div class="dest-box" style="font-size: 0.95rem; line-height: 1.7;">
                 "ขอบคุณที่ยอมร่วมทางและสร้างความทรงจำที่อบอุ่นเหมือนพระอาทิตย์ตกดินด้วยกันนะ ขอให้เราเดินทางเคียงข้างกันแบบนี้ไปนานๆ เลยนะคนดี" 🌅💖
             </div>
         </div>
     </div>
 
     <script>
-        // ข้อมูลจุดเช็คอินความทรงจำระหว่างทาง (สามารถปรับเปลี่ยนข้อความและลิงก์รูปภาพได้ตามใจชอบ)
+        // ข้อมูลจุดเช็คอินความทรงจำ
         const milestones = [
             {
                 title: "จุดที่ 1: ท่าน้ำริมคลอง",
                 text: "“จำวันที่เราไปนั่งคุยกันริมน้ำตอนเย็นได้ไหม? ท้องฟ้าสวยมาก แต่รอยยิ้มเธอสวยกว่านั้นอีกนะ”",
                 img: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=500&q=80",
-                position: 25 // เปอร์เซ็นต์ความกว้าง
+                position: 25,
+                bgOffset: 0
             },
             {
                 title: "จุดที่ 2: ร้านกาแฟอบอุ่น",
                 text: "“โกโก้อุ่นๆ กับเสียงฝนตกเบาๆ วันนั้น ทำให้รู้ว่าการมีเธออยู่ข้างๆ มันอุ่นใจแค่ไหน”",
                 img: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=500&q=80",
-                position: 50
+                position: 50,
+                bgOffset: -30
             },
             {
                 title: "จุดที่ 3: ร้านก๋วยเตี๋ยวเจ้าเก่า",
                 text: "“มื้ออร่อยๆ ง่ายๆ ที่มีความสุขที่สุด เพราะเราได้นั่งกินด้วยกันและแย่งกันชิมตลอดเวลา 🍜”",
                 img: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80",
-                position: 75
+                position: 75,
+                bgOffset: -60
             }
         ];
 
         let currentIndex = -1;
         const boat = document.getElementById('paper-boat');
+        const scrollingBg = document.getElementById('scrollingBg');
         const container = document.getElementById('checkpoints-container');
         const actionBtn = document.getElementById('action-btn');
         const modal = document.getElementById('memory-modal');
@@ -436,6 +441,9 @@
                 // ขยับเรือไปตำแหน่งใหม่
                 boat.style.left = target.position + '%';
                 
+                // เลื่อนแบ็คกราวด์เมืองไปตามจุดแวะพัก
+                scrollingBg.style.transform = `translateX(${target.bgOffset}%)`;
+                
                 // เปลี่ยนสถานะจุดเช็คอิน
                 document.getElementById(`dot-${currentIndex}`).parentElement.classList.add('active');
 
@@ -454,6 +462,7 @@
             } else {
                 // ถึงปลายทาง
                 boat.style.left = '92%';
+                scrollingBg.style.transform = `translateX(-80%)`;
                 setTimeout(() => {
                     destScreen.style.display = 'flex';
                     startCounter();
