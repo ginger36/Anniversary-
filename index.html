@@ -176,6 +176,8 @@
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: auto;
             border: 1px solid #fbcfe8;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         #memory-modal.show .memory-card { transform: scale(1) rotate(0deg); }
         .card-tape {
@@ -192,7 +194,7 @@
         .card-title { font-size: 20px; font-weight: bold; color: #e11d48; margin-bottom: 10px; text-align: center; }
         .card-img-container {
             width: 100%;
-            height: 170px;
+            height: 220px;
             background: #fff1f2;
             border-radius: 12px;
             overflow: hidden;
@@ -202,9 +204,9 @@
             margin-bottom: 12px;
             border: 1px dashed #fbcfe8;
         }
-        .card-img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .card-img-container img { width: 100%; height: 100%; object-fit: contain; }
         .placeholder-text { color: #f43f5e; font-size: 14px; text-align: center; padding: 10px; }
-        .card-message { font-size: 15px; line-height: 1.5; color: #475569; min-height: 50px; text-align: center; white-space: pre-line; margin-bottom: 15px; }
+        .card-message { font-size: 15px; line-height: 1.6; color: #475569; min-height: 50px; text-align: center; white-space: pre-line; margin-bottom: 15px; }
         .close-card-btn {
             display: block;
             width: 100%;
@@ -262,7 +264,7 @@
             <div class="bottom-hint" id="bottomHint">🐶 คลิกที่ "น้องหมาสีน้ำตาลทอง" เพื่อให้น้องหมาวิ่งไปหาความทรงจำ!</div>
         </div>
 
-        <!-- Hidden YouTube Audio Player (เพลงปลายฝนต้นหนาว) -->
+        <!-- Hidden YouTube Audio Player -->
         <div id="youtube-player-container" style="display:none;">
             <iframe id="yt-player" width="200" height="200" src="https://www.youtube.com/embed/faccKGHl5jM?enablejsapi=1&autoplay=1&loop=1&playlist=faccKGHl5jM" frameborder="0"></iframe>
         </div>
@@ -284,7 +286,7 @@
         <div id="final-screen">
             <div class="final-content" style="background: linear-gradient(135deg, #fff1f2, #ffedd5); padding: 24px; border-radius: 20px; border: 1px solid #fbcfe8; box-shadow: 0 15px 35px rgba(244,63,94,0.15);">
                 <h2 style="color: #e11d48; font-size: 24px;">🌅 ปลายฝนต้นหนาว 🌊</h2>
-                <p style="font-size: 16px; color: #475569; margin-top: 10px; line-height: 1.6;">
+                <p style="font-size: 15px; color: #475569; margin-top: 10px; line-height: 1.6;">
                     ขอบคุณที่เดินเคียงข้างกันมาจนครบทุกความทรงจำนะ<br>
                     แสงพระอาทิตย์ตกดินและเกลียวคลื่นทะเลวันนี้<br>
                     สวยงามที่สุดก็เพราะมีแกอยู่ด้วยกันตรงนี้ ♡<br><br>
@@ -302,7 +304,7 @@
             { id: 3, name: "ความทรงจำที่ 3", x: 0.52, imagePath: "https://i.postimg.cc/02M0FYnp/line-oa-chat-261005-174318.jpg", message: "นึกว่าพึ่งเป็นเด็กเอาแต่ใจ\nที่ไหนได้เอาแต่ใจตั้งนานแล้วว่ะ 😜" },
             { id: 4, name: "ความทรงจำที่ 4", x: 0.69, imagePath: "https://i.postimg.cc/CLBsXG7b/line-oa-chat-261005-174934.jpg", message: "ตอนนี้ฉันถ่ายรูปให้แก\nอุส่าห์ตั้งใจถ่ายแนะ 📸" },
             { id: 5, name: "ความทรงจำที่ 5", x: 0.86, imagePath: "https://i.postimg.cc/L6Y3wtDk/line-oa-chat-261005-175008.jpg", message: "ยุ่ดีๆบอลก็ขอเค้าเป็นแฟน\nในขณะที่เล่นเกม และกำลังงอนกัน 😳" },
-            { id: 6, name: "ความทรงจำที่ 6", x: 1.02, imagePath: "", message: "ปลายฝนต้นหนาวนี้...\nขอบคุณนะสำหรับทุกความทรงจำดีๆ ที่เรามีให้กัน ♡" }
+            { id: 6, name: "ความทรงจำที่ 6 🌸", x: 1.02, imagePath: "", message: "ตั้งแต่ตอนที่เราได้รู้จักกัน เรารู้จักกันมา 2 เดือน\nและตกลงที่จะคบกันใน วันที่ 5 เมษา 2569\nและเราคบกันมาได้ 6 เดือน เรารู้จักกันมาได้ 8 เดือนเลยน้า\n\nและวันนี้เป็น วันครบรอบเดือน 6 ของเรา ผักบุ้งดีใจมากน้าที่ได้บอลมาเป็นแฟนผักบุ้ง ถึงเราจะเกือบเลิกกันหลายครั้งแต่ผักบุ้งไม่เคยคิดจะทิ้งบอลนะ เพราะเรามันเท่ไงหึๆๆ ผู้บุ้งหวังว่าจะได้เห็นบอลยิ้มเยอะๆในทุกๆเดือนน้า ՞•･•՞🐾" }
         ];
 
         let currentStep = 0;
@@ -481,7 +483,7 @@
                 ctx.restore();
             }
 
-            // 5. ดาวทะเล
+            // 5. จุดความทรงจำ (1-5 เป็นดาว, จุดที่ 6 เป็นดอกไม้บาน)
             memoriesData.forEach((mem, index) => {
                 let worldObjX = mem.x * worldWidth;
                 let screenObjX = worldObjX - cameraX;
@@ -491,21 +493,50 @@
                     ctx.save();
                     ctx.translate(screenObjX, objY);
 
-                    if(index >= currentStep) {
-                        let glow = Math.sin(time * 5) * 8 + 10;
-                        ctx.shadowColor = '#f43f5e';
-                        ctx.shadowBlur = glow;
+                    if(index < 5) {
+                        // ดาวทะเล 1-5
+                        if(index >= currentStep) {
+                            let glow = Math.sin(time * 5) * 8 + 10;
+                            ctx.shadowColor = '#f43f5e';
+                            ctx.shadowBlur = glow;
+                        }
+                        ctx.fillStyle = index < currentStep ? '#cbd5e1' : '#f43f5e';
+                        drawStar(ctx, 0, 0, 5, 16, 8);
+                        ctx.fill();
+
+                        ctx.fillStyle = '#fff';
+                        ctx.font = '12px "Itim", cursive';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(`${index+1}`, 0, 0);
+                    } else {
+                        // ดอกไม้บานจุดที่ 6
+                        if(index >= currentStep) {
+                            let glow = Math.sin(time * 6) * 12 + 12;
+                            ctx.shadowColor = '#ec4899';
+                            ctx.shadowBlur = glow;
+                        }
+
+                        let scaleFlower = 1 + Math.sin(time * 4) * 0.15;
+                        ctx.scale(scaleFlower, scaleFlower);
+
+                        // กลีบดอกไม้
+                        ctx.fillStyle = index < currentStep ? '#cbd5e1' : '#f43f5e';
+                        for(let p=0; p<5; p++) {
+                            ctx.save();
+                            ctx.rotate((p * 2 * Math.PI) / 5);
+                            ctx.beginPath();
+                            ctx.ellipse(0, -14, 9, 14, 0, 0, Math.PI * 2);
+                            ctx.fill();
+                            ctx.restore();
+                        }
+
+                        // เกสรดอกไม้
+                        ctx.fillStyle = '#fde047';
+                        ctx.beginPath();
+                        ctx.arc(0, 0, 8, 0, Math.PI * 2);
+                        ctx.fill();
                     }
-
-                    ctx.fillStyle = index < currentStep ? '#cbd5e1' : '#f43f5e';
-                    drawStar(ctx, 0, 0, 5, 16, 8);
-                    ctx.fill();
-
-                    ctx.fillStyle = '#fff';
-                    ctx.font = '12px "Itim", cursive';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(`${index+1}`, 0, 0);
 
                     ctx.restore();
                 }
@@ -628,9 +659,10 @@
 
             const imgContainer = document.getElementById('modalImgContainer');
             if(mem.imagePath) {
+                imgContainer.style.display = 'flex';
                 imgContainer.innerHTML = `<img src="${mem.imagePath}" alt="${mem.name}">`;
             } else {
-                imgContainer.innerHTML = `<div class="placeholder-text">รูปภาพความทรงจำที่ ${index + 1}</div>`;
+                imgContainer.style.display = 'none'; // ซ่อนกรอบรูปถ้าเป็นจุดที่ 6 เพื่อให้โชว์ข้อความดอกไม้บานแบบเต็มตา
             }
 
             document.getElementById('memory-modal').classList.add('show');
