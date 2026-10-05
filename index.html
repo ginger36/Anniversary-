@@ -57,7 +57,7 @@
             align-items: center;
         }
         .progress-badge {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(8px);
             padding: 6px 16px;
             border-radius: 20px;
@@ -68,7 +68,7 @@
             box-shadow: 0 4px 12px rgba(251, 207, 232, 0.5);
         }
         .music-btn {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 182, 193, 0.5);
             border-radius: 50%;
@@ -130,7 +130,7 @@
 
         .bottom-hint {
             text-align: center;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(6px);
             padding: 8px 16px;
             border-radius: 20px;
@@ -250,7 +250,7 @@
         <!-- Start Screen -->
         <div id="start-screen">
             <h1>ปลายฝนต้นหนาว ♡</h1>
-            <p>เดินเล่นริมชายหาดพาสเทลกับน้องหมาปุยสีขาวนวล<br>เพื่อค้นหาความทรงจำ 6 อย่างกันนะ...</p>
+            <p>เดินเล่นริมชายหาดพระอาทิตย์ตกกับน้องหมา<br>แตะสำรวจความทรงจำทั้ง 6 เพื่อเปิดเรื่องราวกันนะ...</p>
             <button class="start-btn" onclick="startExperience()">เริ่มต้นเรื่องราว</button>
         </div>
 
@@ -261,7 +261,7 @@
                 <div class="progress-badge" id="progressText">♡ ความทรงจำ 0/6</div>
                 <div class="music-btn" id="musicToggleBtn" onclick="toggleMusic()">♫</div>
             </header>
-            <div class="bottom-hint" id="bottomHint">💡 ลากนิ้วซ้าย-ขวาเพื่อเดินเล่น และแตะความทรงจำบนหาดทราย</div>
+            <div class="bottom-hint" id="bottomHint">💡 แตะที่วัตถุความทรงจำบนหาดทรายเพื่อเปิดดูความทรงจำ</div>
         </div>
 
         <!-- Memory Modal -->
@@ -288,9 +288,10 @@
     </div>
 
     <script>
+        // ข้อมูลความทรงจำทั้ง 6 อัน
         const memoriesData = [
             { id: 1, name: "ความทรงจำที่ 1", x: 0.15, imagePath: "", message: "รู้ไหมที่เราทักไปหาแกก่อน\nเพราะเราแอบชอบแก" },
-            { id: 2, name: "ความทรงจำที่ 2", x: 0.32, imagePath: "", message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔" },
+            { id: 2, name: "ความทรงจำที่ 2", x: 0.32, imagePath: "image_2.png", message: "เนี้ยเป็นตอนที่เราเล่นเกมด้วยกัน\nบ้านแกโคตรกั่ย 🐔" }, // ใส่ภาพจากแชท Minecraft[span_1](start_span)[span_1](end_span)
             { id: 3, name: "ความทรงจำที่ 3", x: 0.50, imagePath: "", message: "นึกว่าพึ่งเป็นเด็กเอาแต่ใจ\nที่ไหนได้เอาแต่ใจตั้งนานแล้วว่ะ 😜" },
             { id: 4, name: "ความทรงจำที่ 4", x: 0.68, imagePath: "", message: "ตอนนี้ฉันถ่ายรูปให้แก\nอุส่าห์ตั้งใจถ่ายแนะ 📸" },
             { id: 5, name: "ความทรงจำที่ 5", x: 0.85, imagePath: "", message: "ยุ่ดีๆบอลก็ขอเค้าเป็นแฟน\nในขณะที่เล่นเกม และกำลังงอนกัน 😳" },
@@ -302,7 +303,7 @@
         let cameraX = 0;
         let targetCameraX = 0;
         let worldWidth = 3000;
-        let dogX = 180;
+        let dogX = 180; // ตำแหน่งน้องหมา
 
         const canvas = document.getElementById('beachCanvas');
         const ctx = canvas.getContext('2d');
@@ -316,12 +317,12 @@
         resizeCanvas();
 
         let particles = [];
-        for(let i=0; i<40; i++) {
+        for(let i=0; i<35; i++) {
             particles.push({
                 x: Math.random() * worldWidth,
-                y: Math.random() * height * 0.5 + height * 0.25,
+                y: Math.random() * height * 0.45 + height * 0.25,
                 size: Math.random() * 2 + 1,
-                speedX: Math.random() * 0.4 + 0.2,
+                speedX: Math.random() * 0.3 + 0.1,
                 opacity: Math.random() * 0.4 + 0.2
             });
         }
@@ -334,43 +335,7 @@
             requestAnimationFrame(gameLoop);
         }
 
-        let isDragging = false;
-        let startX = 0;
-
-        window.addEventListener('touchstart', (e) => {
-            if(!isStarted) return;
-            isDragging = true;
-            startX = e.touches[0].clientX;
-        });
-        window.addEventListener('touchmove', (e) => {
-            if(!isDragging || !isStarted) return;
-            let dx = e.touches[0].clientX - startX;
-            startX = e.touches[0].clientX;
-            targetCameraX -= dx * 1.8;
-            clampCamera();
-        });
-        window.addEventListener('touchend', () => { isDragging = false; });
-
-        window.addEventListener('mousedown', (e) => {
-            if(!isStarted) return;
-            isDragging = true;
-            startX = e.clientX;
-        });
-        window.addEventListener('mousemove', (e) => {
-            if(!isDragging || !isStarted) return;
-            let dx = e.clientX - startX;
-            startX = e.clientX;
-            targetCameraX -= dx * 1.8;
-            clampCamera();
-        });
-        window.addEventListener('mouseup', () => { isDragging = false; });
-
-        function clampCamera() {
-            let maxScroll = worldWidth - width;
-            if(targetCameraX < 0) targetCameraX = 0;
-            if(targetCameraX > maxScroll) targetCameraX = maxScroll;
-        }
-
+        // ระบบเสียงประกอบ (Web Audio API)
         let audioCtx = null;
         let musicPlaying = false;
         let oscillator = null;
@@ -381,7 +346,7 @@
                 oscillator = audioCtx.createOscillator();
                 let gainNode = audioCtx.createGain();
                 oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(329.63, audioCtx.currentTime);
+                oscillator.frequency.setValueAtTime(329.63, audioCtx.currentTime); // โทนเพลงอบอุ่น
                 gainNode.gain.setValueAtTime(0.02, audioCtx.currentTime);
                 oscillator.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
@@ -408,60 +373,52 @@
             if(!isStarted) return;
             time += 0.02;
 
+            // Smooth camera lerp
             cameraX += (targetCameraX - cameraX) * 0.08;
 
-            // Dog moves smoothly toward target position as memories are found
+            // น้องหมาจะเดินไปข้างหน้าตามจุดหมายเมื่อกดแตะพบความทรงจำ
             let count = discovered.filter(Boolean).length;
             let targetDogWorldX = 180 + (count / 6) * (worldWidth - 500);
             dogX += (targetDogWorldX - dogX) * 0.05;
 
             ctx.clearRect(0, 0, width, height);
 
-            // Pastel Sunset Sky Gradient (Soft & Warm)
-            let progressRatio = cameraX / (worldWidth - width);
+            // 1. ท้องฟ้าพาสเทลพระอาทิตย์ตก
             let skyGrad = ctx.createLinearGradient(0, 0, 0, height * 0.55);
-            
-            if(progressRatio < 0.5) {
-                skyGrad.addColorStop(0, '#fbcfe8'); // Pastel Pink
-                skyGrad.addColorStop(0.4, '#fed7aa'); // Pastel Peach
-                skyGrad.addColorStop(0.8, '#fef08a'); // Soft Yellow
-                skyGrad.addColorStop(1, '#bae6fd'); // Soft Sky Blue
-            } else {
-                skyGrad.addColorStop(0, '#f472b6');
-                skyGrad.addColorStop(0.4, '#c084fc');
-                skyGrad.addColorStop(0.8, '#818cf8');
-                skyGrad.addColorStop(1, '#38bdf8');
-            }
+            skyGrad.addColorStop(0, '#fbcfe8'); // ชมพูพาสเทล
+            skyGrad.addColorStop(0.4, '#fed7aa'); // ส้มพีช
+            skyGrad.addColorStop(0.8, '#fef08a'); // เหลืองนวล
+            skyGrad.addColorStop(1, '#bae6fd'); // ฟ้าอ่อน
             ctx.fillStyle = skyGrad;
             ctx.fillRect(0, 0, width, height * 0.55);
 
-            // Soft Glowing Sun
+            // พระอาทิตย์ดวงโตขอบฟ้า
             let sunX = width * 0.6 - (cameraX * 0.15);
             let sunY = height * 0.4;
-            let sunGrad = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, 65);
+            let sunGrad = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, 75);
             sunGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
             sunGrad.addColorStop(0.5, 'rgba(254, 215, 170, 0.6)');
             sunGrad.addColorStop(1, 'rgba(254, 215, 170, 0)');
             ctx.fillStyle = sunGrad;
             ctx.beginPath();
-            ctx.arc(sunX, sunY, 65, 0, Math.PI * 2);
+            ctx.arc(sunX, sunY, 75, 0, Math.PI * 2);
             ctx.fill();
 
-            // Pastel Sea & Waves
+            // 2. ทะเลพาสเทล
             let seaY = height * 0.55;
-            let seaGrad = ctx.createLinearGradient(0, seaY, 0, height * 0.75);
+            let seaGrad = ctx.createLinearGradient(0, seaY, 0, height * 0.72);
             seaGrad.addColorStop(0, '#f43f5e');
             seaGrad.addColorStop(0.4, '#38bdf8');
             seaGrad.addColorStop(1, '#0284c7');
             ctx.fillStyle = seaGrad;
-            ctx.fillRect(0, seaY, width, height * 0.2);
+            ctx.fillRect(0, seaY, width, height * 0.17);
 
-            // Gentle Waves
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            // คลื่นทะเลซัด
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
             ctx.lineWidth = 2;
             for(let i=0; i<3; i++) {
                 ctx.beginPath();
-                let waveY = seaY + i * 22 + Math.sin(time + i) * 4;
+                let waveY = seaY + i * 20 + Math.sin(time + i) * 4;
                 for(let x=0; x<=width; x+=10) {
                     let wy = waveY + Math.sin(x * 0.02 + time * 2 + i) * 3;
                     if(x === 0) ctx.moveTo(x, wy);
@@ -470,7 +427,7 @@
                 ctx.stroke();
             }
 
-            // Pastel Sand (Warm & Soft)
+            // 3. หาดทรายพาสเทลอบอุ่น
             let sandY = height * 0.72;
             let sandGrad = ctx.createLinearGradient(0, sandY, 0, height);
             sandGrad.addColorStop(0, '#fef08a');
@@ -485,7 +442,10 @@
             ctx.closePath();
             ctx.fill();
 
-            // Soft floating light particles
+            // วาดองค์ประกอบริมชายหาด (ต้นมะพร้าว, ปราสาททราย, หอย, ปู)
+            drawBeachDecorations(cameraX);
+
+            // ละอองลมพัดเบา ๆ
             ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
             particles.forEach(p => {
                 let screenX = p.x - cameraX;
@@ -498,7 +458,7 @@
                 if(p.x < 0) p.x = worldWidth;
             });
 
-            // Cute Fluffy Pastel Dog 🐶 (Soft cream/white color)
+            // 4. น้องหมาน่ารักปุยสีขาวนวล
             let dogScreenX = dogX - cameraX;
             if(dogScreenX >= -60 && dogScreenX <= width + 60) {
                 ctx.save();
@@ -506,24 +466,24 @@
                 let bounce = Math.abs(Math.sin(time * 8)) * 3;
                 ctx.translate(0, -bounce);
 
-                // Body (Cream/White fluffy color)
+                // ตัวน้องหมา
                 ctx.fillStyle = '#fef08a';
                 ctx.beginPath();
                 ctx.ellipse(0, 0, 16, 11, 0, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Head
+                // หัวน้องหมา
                 ctx.beginPath();
                 ctx.arc(12, -7, 9, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Ears (Cute floppy ear)
+                // หู
                 ctx.fillStyle = '#fde047';
                 ctx.beginPath();
                 ctx.arc(8, -12, 4, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Happy Tail wagging
+                // หางดุ๊กดิ๊ก
                 ctx.strokeStyle = '#fde047';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
@@ -534,7 +494,7 @@
                 ctx.restore();
             }
 
-            // Render Memories items (Pastel styled)
+            // 5. วัตถุความทรงจำทั้ง 6 จุด
             memoriesData.forEach((mem, index) => {
                 let worldObjX = mem.x * worldWidth;
                 let screenObjX = worldObjX - cameraX;
@@ -567,6 +527,40 @@
             requestAnimationFrame(gameLoop);
         }
 
+        // ฟังก์ชันวาดต้นมะพร้าว ปราสาททราย หอย ปู ในฉาก
+        function drawBeachDecorations(camX) {
+            // ต้นมะพร้าว
+            let treeX = 600 - camX;
+            if(treeX > -100 && treeX < width + 100) {
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(treeX, height * 0.45, 16, height * 0.3);
+                // ใบมะพร้าว
+                ctx.fillStyle = '#10b981';
+                ctx.beginPath();
+                ctx.ellipse(treeX + 8, height * 0.45, 40, 15, -0.3, 0, Math.PI * 2);
+                ctx.ellipse(treeX + 8, height * 0.45, 40, 15, 0.3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // ปราสาททราย
+            let castleX = 1400 - camX;
+            if(castleX > -100 && castleX < width + 100) {
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(castleX, height * 0.7, 50, 40);
+                ctx.fillRect(castleX + 10, height * 0.65, 30, 15);
+            }
+
+            // น้องปูและเปลือกหอยประดับ
+            let crabX = 2200 - camX;
+            if(crabX > -50 && crabX < width + 50) {
+                ctx.fillStyle = '#e11d48';
+                ctx.beginPath();
+                ctx.arc(crabX, height * 0.85, 8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // คลิก/แตะเพื่อเปิดความทรงจำและให้น้องหมาขยับ
         canvas.addEventListener('click', (e) => {
             if(!isStarted) return;
             const rect = canvas.getBoundingClientRect();
@@ -578,8 +572,10 @@
                 let screenObjX = worldObjX - cameraX;
                 let objY = height * 0.82;
 
-                if(Math.abs(clickX - screenObjX) < 40 && Math.abs(clickY - objY) < 40) {
+                if(Math.abs(clickX - screenObjX) < 45 && Math.abs(clickY - objY) < 45) {
                     openMemory(index);
+                    // ขยับกล้องตามความทรงจำที่กด
+                    targetCameraX = Math.max(0, Math.min(worldWidth - width, worldObjX - width / 2));
                 }
             });
         });
@@ -597,7 +593,7 @@
             if(mem.imagePath) {
                 imgContainer.innerHTML = `<img src="${mem.imagePath}" alt="${mem.name}">`;
             } else {
-                imgContainer.innerHTML = `<div class="placeholder-text">รูปภาพความทรงจำที่ ${index + 1}<br><span style="font-size:12px; color:#fb7185;">(ใส่รูปจริงใน memoriesData ได้เลย)</span></div>`;
+                imgContainer.innerHTML = `<div class="placeholder-text">รูปภาพความทรงจำที่ ${index + 1}</div>`;
             }
 
             document.getElementById('memory-modal').classList.add('show');
