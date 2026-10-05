@@ -1,11 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>คืนนี้ฝนตกอีกแล้วนะ...</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500&family=Sarabun:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Prompt สำหรับ UI ทั่วไป และ Sarabun / Caveat สำหรับข้อความลายมือ -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Prompt:wght@300;400;500&family=Sarabun:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -16,7 +16,7 @@
         }
 
         body {
-            background-color: #070913;
+            background-color: #04060b;
             font-family: 'Prompt', sans-serif;
             color: #e2e8f0;
             height: 100vh;
@@ -27,577 +27,520 @@
             overflow: hidden;
         }
 
-        /* Mobile Container 9:16 Ratio Frame */
+        /* Mobile First Window Frame Container (Ratio 9:16) */
         #app-container {
             width: 100%;
-            max-width: 430px;
+            max-width: 420px;
             height: 100%;
-            max-height: 932px;
-            background: linear-gradient(180deg, #090d16 0%, #131b2e 50%, #1a1528 100%);
+            max-height: 880px;
+            background: #090d16;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
         }
 
-        @media (min-width: 434px) {
+        @media (min-width: 424px) {
             #app-container {
-                border-radius: 40px;
-                border: 8px solid #232d42;
-                height: 90vh;
+                border-radius: 36px;
+                border: 10px solid #1f2430;
+                height: 92vh;
             }
         }
 
-        /* Canvas Rain & Effects */
-        canvas {
+        /* --- CINEMATIC WINDOW FRAME BORDER --- */
+        .window-frame-border {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            border: 14px solid #181d28;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.8), 0 0 15px rgba(0,0,0,0.5);
             pointer-events: none;
+            z-index: 40;
+            display: flex;
+            justify-content: space-between;
+        }
+        /* หน้าต่างจำลองแบ่งช่องซ้ายขวา/กลาง */
+        .window-pane-divider-v {
+            width: 6px;
+            height: 100%;
+            background: #181d28;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.6);
+            margin: 0 auto;
+        }
+
+        /* Film Grain & Vignette */
+        .grain-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E');
+            pointer-events: none;
+            z-index: 35;
+        }
+
+        .vignette {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            box-shadow: inset 0 0 80px rgba(0,0,0,0.8);
+            pointer-events: none;
+            z-index: 36;
+        }
+
+        /* Canvas สำหรับฝนและเอฟเฟกต์ละอองแสง */
+        canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* World Scene (ภายในกรอบหน้าต่าง) */
+        .world-scene {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, #0b1021 0%, #161e38 50%, #1f1b2e 100%);
+            transition: background 2s ease;
             z-index: 2;
         }
 
-        /* Film Grain Overlay */
-        .grain-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
-            pointer-events: none;
-            z-index: 10;
+        .world-scene.sunset {
+            background: linear-gradient(180deg, #2c162d 0%, #613033 40%, #a8583c 80%, #d49157 100%);
         }
 
-        /* Scene Layouts */
-        .scene {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 40px 24px;
-            z-index: 5;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 1s ease, transform 1s ease;
-            transform: scale(0.98);
+        /* Background Illustration Layers (CSS Vector art) */
+        .sky-bg { position: absolute; width: 100%; height: 60%; top: 0; left: 0; }
+        .city-silhouette {
+            position: absolute; bottom: 15%; left: 0; width: 100%; height: 50%;
+            background: 
+                linear-gradient(0deg, #0c1122 0%, transparent 100%),
+                repeating-linear-gradient(90deg, transparent, transparent 35px, #10162a 35px, #10162a 70px);
+            z-index: 3;
+        }
+        .road-reflection {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 25%;
+            background: linear-gradient(180deg, #0d1222 0%, #060913 100%);
+            border-top: 1px solid rgba(246, 173, 85, 0.2);
+            z-index: 4;
         }
 
-        .scene.active {
-            opacity: 1;
-            visibility: visible;
-            transform: scale(1);
-        }
-
-        /* Background Illustration Styles */
-        .bg-illustration {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 60%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* Top Audio Controller */
-        .top-bar {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 20;
-            display: flex;
-            gap: 10px;
-        }
-
-        .icon-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            backdrop-filter: blur(4px);
-            transition: background 0.3s;
-        }
-
-        .icon-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Typography & UI Components */
-        h1, h2, p {
-            text-align: center;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-        }
-
-        .story-text {
-            font-family: 'Sarabun', sans-serif;
-            font-size: 1.25rem;
-            line-height: 1.8;
-            color: #d1d5db;
-            font-weight: 300;
-        }
-
-        .glow-btn {
-            background: linear-gradient(135deg, #f6ad55, #ed8936);
-            color: #1a202c;
-            border: none;
-            padding: 14px 32px;
-            font-size: 1rem;
-            font-weight: 500;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(237, 137, 54, 0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin: 0 auto;
-            display: block;
-            z-index: 20;
-        }
-
-        .glow-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Clickable Hotspots in Scene 1 & 5 */
-        .hotspot {
+        /* --- INTERACTIVE OBJECTS (HOTSPOTS) --- */
+        .interactive-obj {
             position: absolute;
             cursor: pointer;
             z-index: 15;
-            transition: transform 0.3s;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .hotspot:hover {
-            transform: scale(1.05);
+        .interactive-obj:hover {
+            transform: scale(1.08);
+        }
+        .interactive-obj:active {
+            transform: scale(0.95);
         }
 
-        /* Modal & Popups (Polaroid & Letter) */
+        /* Glowing Pulse Hint สำหรับวัตถุกดได้ */
+        .pulse-glow {
+            animation: objectGlow 2.5s infinite ease-in-out;
+        }
+        @keyframes objectGlow {
+            0%, 100% { filter: drop-shadow(0 0 3px rgba(246,173,85,0.4)); }
+            50% { filter: drop-shadow(0 0 10px rgba(246,173,85,0.9)); }
+        }
+
+        /* --- DIALOGUE / STORY OVERLAY BOX --- */
+        .story-hud {
+            position: absolute;
+            bottom: 30px;
+            left: 24px;
+            right: 24px;
+            background: rgba(12, 16, 28, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 16px 20px;
+            border-radius: 16px;
+            z-index: 50;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
+            pointer-events: none;
+        }
+        .story-hud.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .story-hud-text {
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #f1f5f9;
+            text-align: center;
+            min-height: 45px;
+        }
+        .story-hud-next {
+            display: block;
+            margin: 10px auto 0 auto;
+            background: none;
+            border: none;
+            color: #f6ad55;
+            font-size: 0.85rem;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- MODAL POPUPS (POLAROID & LETTER) --- */
         .modal-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(5, 7, 12, 0.85);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 6, 11, 0.8);
             backdrop-filter: blur(8px);
-            z-index: 30;
+            z-index: 60;
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.4s ease;
+            transition: all 0.4s ease;
         }
-
         .modal-overlay.show {
             opacity: 1;
             visibility: visible;
         }
 
-        /* Polaroid Frame */
-        .polaroid {
+        /* Polaroid Card */
+        .polaroid-card {
             background: #fdfbf7;
-            padding: 16px 16px 40px 16px;
-            width: 260px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            transform: scale(0.8) rotate(-3deg);
+            padding: 16px 16px 42px 16px;
+            width: 270px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            transform: scale(0.7) rotate(-6deg);
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             color: #2d3748;
             text-align: center;
         }
-
-        .modal-overlay.show .polaroid {
-            transform: scale(1) rotate(-2deg);
+        .modal-overlay.show .polaroid-card {
+            transform: scale(1) rotate(-2.5deg);
         }
-
-        .polaroid::before {
+        .polaroid-card::before {
             content: '';
             position: absolute;
-            top: -12px;
-            left: 50%;
+            top: -10px; left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 24px;
-            background: rgba(255, 255, 255, 0.6);
-            border-left: 2px dashed rgba(0,0,0,0.1);
-            border-right: 2px dashed rgba(0,0,0,0.1);
+            width: 70px; height: 22px;
+            background: rgba(255, 255, 255, 0.65);
+            border-left: 2px dashed rgba(0,0,0,0.15);
+            border-right: 2px dashed rgba(0,0,0,0.15);
         }
-
-        .polaroid-img {
-            width: 100%;
-            height: 200px;
-            background: #2d3748;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .polaroid-img-box {
+            width: 100%; height: 190px;
+            background: #232d42;
+            display: flex; justify-content: center; align-items: center;
             overflow: hidden;
             position: relative;
         }
-
-        .polaroid-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
         .polaroid-caption {
-            margin-top: 16px;
-            font-family: 'Sarabun', sans-serif;
-            font-size: 1.1rem;
+            margin-top: 14px;
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
             color: #4a5568;
         }
 
-        /* Envelope & Letter Frame */
-        .letter-container {
-            width: 300px;
+        /* Letter Envelope Container */
+        .letter-modal-box {
+            width: 310px;
             background: #f4eee1;
-            padding: 30px 24px;
+            padding: 30px 22px;
             border-radius: 4px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
             color: #2c2c2c;
             font-family: 'Sarabun', sans-serif;
             position: relative;
-            transform: translateY(30px);
+            transform: translateY(40px);
             opacity: 0;
             transition: all 0.5s ease;
         }
-
-        .modal-overlay.show .letter-container {
+        .modal-overlay.show .letter-modal-box {
             transform: translateY(0);
             opacity: 1;
         }
-
-        .letter-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
+        .letter-content {
+            font-size: 1.05rem;
+            line-height: 1.9;
             white-space: pre-line;
-            min-height: 150px;
+            min-height: 160px;
         }
 
-        /* Progress tracker */
-        .progress-indicator {
+        /* --- INTRO SCREEN & START BUTTON --- */
+        #intro-screen {
             position: absolute;
-            top: 24px;
-            left: 24px;
-            font-size: 0.85rem;
-            background: rgba(255,255,255,0.1);
-            padding: 6px 14px;
-            border-radius: 20px;
-            backdrop-filter: blur(4px);
-            z-index: 20;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(7, 10, 19, 0.92);
+            z-index: 70;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            transition: opacity 0.8s ease;
+        }
+        #intro-screen.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .glow-btn {
+            background: linear-gradient(135deg, #f6ad55, #ed8936);
+            color: #111827;
+            border: none;
+            padding: 14px 36px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(237, 137, 54, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 25px;
+        }
+        .glow-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Progress tracker บนมุมขวา */
+        .story-progress {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.15);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            z-index: 45;
+            backdrop-filter: blur(4px);
         }
 
-        /* City CSS Graphics for Scene Backgrounds */
-        .city-bg {
+        /* Audio toggle button มุมซ้ายบน */
+        .audio-btn {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 45%;
-            background-image: 
-                linear-gradient(0deg, rgba(13,19,34,0.9), transparent),
-                /* Buildings silhouette vector simulation */
-                radial-gradient(circle at 20% 40%, #f6ad55 2px, transparent 2px),
-                radial-gradient(circle at 80% 30%, #f6ad55 2px, transparent 2px);
-            z-index: 2;
-        }
-        
-        .reflection-road {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 25%;
-            background: linear-gradient(180deg, rgba(15,23,42,0.8) 0%, rgba(7,9,19,0.95) 100%);
-            border-top: 1px solid rgba(246, 173, 85, 0.2);
-            z-index: 3;
-        }
-
-        .hint-pulse {
-            animation: pulseGlow 2s infinite;
-        }
-        @keyframes pulseGlow {
-            0% { filter: drop-shadow(0 0 2px rgba(246,173,85,0.4)); }
-            50% { filter: drop-shadow(0 0 10px rgba(246,173,85,0.9)); }
-            100% { filter: drop-shadow(0 0 2px rgba(246,173,85,0.4)); }
+            top: 25px;
+            left: 25px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            z-index: 45;
+            backdrop-filter: blur(4px);
         }
     </style>
 </head>
 <body>
 
     <div id="app-container">
-        <!-- Film grain texture -->
+        <!-- Film Grain & Vignette Effects -->
         <div class="grain-overlay"></div>
+        <div class="vignette"></div>
 
-        <!-- Rain & Particle Canvas -->
+        <!-- Rain Canvas -->
         <canvas id="rainCanvas"></canvas>
 
-        <!-- Top Bar Audio & Mute -->
-        <div class="top-bar">
-            <button class="icon-btn" id="audioToggle">🔊 เสียงฝน</button>
+        <!-- Audio Ambience Toggle -->
+        <button class="audio-btn" id="audioToggleBtn" onclick="toggleAudio()">🔊 เสียงฝน</button>
+
+        <!-- Progress Indicator -->
+        <div class="story-progress" id="progressIndicator">ความทรงจำ 0/4</div>
+
+        <!-- --- INTRO START SCREEN --- -->
+        <div id="intro-screen">
+            <p style="font-family: 'Sarabun', sans-serif; font-size: 1.35rem; color: #cbd5e1; margin-bottom: 12px; line-height: 1.8;">
+                "คืนนี้ฝนตกอีกแล้วนะ..."
+            </p>
+            <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 30px; font-weight: 300;">
+                มองผ่านหน้าต่างความทรงจำออกไปสิ มีบางสิ่งซ่อนอยู่
+            </p>
+            <button class="glow-btn" onclick="startStory()">เปิดหน้าต่างสำรวจ</button>
         </div>
 
-        <!-- ================= PAGE HOME ================= -->
-        <div class="scene active" id="scene-home">
-            <div style="flex: 1;"></div>
-            <div style="text-align: center; z-index: 10;">
-                <p class="story-text" style="font-size: 1.4rem; margin-bottom: 30px;">"คืนนี้ฝนตกอีกแล้วนะ..."</p>
-                <button class="glow-btn" onclick="goToScene(1)">เข้าไปดู</button>
-            </div>
-            <div style="flex: 1;"></div>
-        </div>
+        <!-- --- WORLD SCENE (มองผ่านกรอบหน้าต่าง) --- -->
+        <div class="world-scene" id="worldScene">
+            <div class="sky-bg"></div>
+            <div class="city-silhouette"></div>
+            <div class="road-reflection"></div>
 
-        <!-- ================= SCENE 1 : STREET & INTERACTIONS ================= -->
-        <div class="scene" id="scene-1">
-            <div style="padding-top: 20px; text-align: center;">
-                <p class="story-text" id="s1-hint">แตะสิ่งของรอบตัว เพื่อค้นหาความทรงจำ...</p>
+            <!-- Interactive Object 1: หน้าต่างห้องอุ่นๆ (ซ้ายบน) -->
+            <div class="interactive-obj pulse-glow" style="top: 22%; left: 18%; width: 55px; height: 75px; background: rgba(246,173,85,0.35); border-radius: 4px; border: 1px solid #f6ad55;" onclick="triggerObject('window')">
+                <div style="font-size: 9px; color: #f6ad55; position: absolute; bottom: -18px; left: -2px; width: 70px; text-align: center;">หน้าต่างห้อง</div>
             </div>
 
-            <!-- Interactive Hotspots elements placed in city -->
-            <div style="position: relative; width: 100%; height: 60%; flex-grow: 1;">
-                <!-- Window Light -->
-                <div class="hotspot hint-pulse" style="top: 20%; left: 15%; width: 60px; height: 80px; background: rgba(246,173,85,0.3); border-radius: 4px; border: 1px solid #f6ad55;" onclick="openPolaroid('window')">
-                    <span style="font-size: 10px; color: #f6ad55; position: absolute; bottom: -20px; left: 5px;">หน้าต่างอุ่นๆ</span>
-                </div>
-
-                <!-- Coffee Shop Sign -->
-                <div class="hotspot hint-pulse" style="top: 35%; right: 20%; width: 70px; height: 50px; background: rgba(237,137,54,0.2); border-radius: 8px; border: 1px solid #ed8936; display: flex; align-items: center; justify-content: center;" onclick="openPolaroid('cafe')">
-                    <span style="font-size: 10px; color: #ed8936;">ร้านกาแฟ</span>
-                </div>
-
-                <!-- Envelope on street -->
-                <div class="hotspot hint-pulse" style="bottom: 15%; left: 45%; width: 50px; height: 35px; background: #f4eee1; border-radius: 4px; box-shadow: 0 0 10px rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center;" onclick="goToScene(3)">
-                    <span style="font-size: 9px; color: #333; font-weight: bold;">จดหมาย</span>
-                </div>
+            <!-- Interactive Object 2: ร้านกาแฟ (ขวาบน) -->
+            <div class="interactive-obj pulse-glow" style="top: 32%; right: 18%; width: 65px; height: 50px; background: rgba(237,137,54,0.25); border-radius: 6px; border: 1px solid #ed8936; display: flex; align-items: center; justify-content: center;" onclick="triggerObject('cafe')">
+                <span style="font-size: 9px; color: #ed8936; font-weight: 500;">ร้านกาแฟ</span>
             </div>
 
-            <div style="text-align: center; padding-bottom: 20px;">
-                <button class="icon-btn" onclick="goToScene(2)">ดูรูปโพลารอยด์หลัก</button>
+            <!-- Interactive Object 3: แก้วกาแฟริมหน้าต่าง (ตรงกลางล่าง) -->
+            <div class="interactive-obj pulse-glow" style="bottom: 22%; left: 30%; width: 35px; height: 35px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center;" onclick="triggerObject('coffee')">
+                <span style="font-size: 14px;">☕</span>
             </div>
-        </div>
 
-        <!-- ================= SCENE 2 : POLAROID VIEW ================= -->
-        <div class="modal-overlay show" id="modal-polaroid" style="display: none;">
-            <div class="polaroid" onclick="closePolaroid()">
-                <div class="polaroid-img">
-                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #2c3e50, #3498db); display:flex; align-items:center; justify-content:center; color: #fff; font-size: 14px;">
-                        ☕ Rainy Window
-                    </div>
-                </div>
-                <div class="polaroid-caption">
-                    "ฝนตกแบบนี้ เปียกหรือเปล่า<br>อย่าลืมพกร่มนะ"
-                </div>
-                <div style="font-size: 10px; color: #a0aec0; margin-top: 10px;">(แตะเพื่อปิดกลับไป)</div>
+            <!-- Interactive Object 4: ซองจดหมายเก่าบนถนน (กลางล่าง) -->
+            <div class="interactive-obj pulse-glow" style="bottom: 12%; right: 32%; width: 45px; height: 30px; background: #f4eee1; border-radius: 3px; box-shadow: 0 0 10px rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center;" onclick="triggerObject('letter')">
+                <span style="font-size: 8px; color: #333; font-weight: bold;">💌 จดหมาย</span>
             </div>
         </div>
 
-        <!-- ================= SCENE 3 : LETTER VIEW ================= -->
-        <div class="scene" id="scene-3">
-            <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
-                <div class="letter-container">
-                    <p style="text-align: right; font-size: 0.85rem; color: #718096; margin-bottom: 10px;">ซองจดหมายสีเก่า</p>
-                    <div class="letter-text" id="typewriter-box"></div>
-                    <div style="margin-top: 20px; text-align: right;">
-                        <button class="glow-btn" id="s3-next-btn" style="display:none; padding: 8px 20px; font-size: 0.9rem;" onclick="goToScene(4)">พับจดหมายเก็บ</button>
-                    </div>
+        <!-- --- STORY HUD DIALOGUE BOX --- -->
+        <div class="story-hud" id="storyHud">
+            <div class="story-hud-text" id="hudText">ข้อความเรื่องราว...</div>
+            <button class="story-hud-next" onclick="closeHud()">แตะเพื่อปิดหรือสำรวจต่อ ➔</button>
+        </div>
+
+        <!-- --- MODAL: POLAROID VIEW --- -->
+        <div class="modal-overlay" id="polaroidModal" onclick="closePolaroidModal()">
+            <div class="polaroid-card">
+                <div class="polaroid-img-box">
+                    <div style="font-size: 2rem;">🌧️</div>
                 </div>
+                <div class="polaroid-caption" id="polaroidCaptionText">
+                    "จำวันนั้นได้ไหม..."
+                </div>
+                <div style="font-size: 9px; color: #a0aec0; margin-top: 8px;">(แตะที่นี่เพื่อเก็บความทรงจำ)</div>
             </div>
         </div>
 
-        <!-- ================= SCENE 4 : RAIN STOPS ================= -->
-        <div class="scene" id="scene-4">
-            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                <p class="story-text" style="font-size: 1.4rem; margin-bottom: 20px;" id="s4-text-1">ฝนหยุดแล้ว</p>
-                <p class="story-text" style="font-size: 1.1rem; color: #a0aec0; margin-bottom: 40px; opacity: 0;" id="s4-text-2">แต่ดูเหมือนทุกอย่างที่คิดถึง<br>ยังไม่เคยหายไปไหน</p>
-                <button class="glow-btn" style="opacity: 0; pointer-events: none;" id="s4-btn" onclick="goToScene(5)">ออกไปเดินเล่นกัน</button>
-            </div>
-        </div>
-
-        <!-- ================= SCENE 5 : DISCOVER MEMORIES ================= -->
-        <div class="scene" id="scene-5">
-            <div class="progress-indicator" id="progress-text">ความทรงจำ 0/3</div>
-            <div style="flex: 1; position: relative;">
-                <p style="text-align: center; margin-top: 50px; font-size: 0.95rem; color: #cbd5e1;">แตะรูปความทรงจำที่ลอยอยู่รอบตัวให้ครบ</p>
-                
-                <!-- Floating Memory Items -->
-                <div class="hotspot hint-pulse" style="top: 30%; left: 20%; background: #fff; padding: 8px; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" onclick="collectMemory(0, 'ร้านกาแฟที่เราเคยนั่งหลบฝนด้วยกัน')">
-                    <div style="width: 60px; height: 50px; background: #cbd5e1; font-size: 9px; color: #333; display: flex; align-items: center; justify-content: center;">☕ รูปที่ 1</div>
-                </div>
-                
-                <div class="hotspot hint-pulse" style="top: 50%; right: 25%; background: #fff; padding: 8px; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" onclick="collectMemory(1, 'ร่มคันสีเหลืองที่เคยใช้ร่วมกัน')">
-                    <div style="width: 60px; height: 50px; background: #cbd5e1; font-size: 9px; color: #333; display: flex; align-items: center; justify-content: center;">☂️ รูปที่ 2</div>
-                </div>
-
-                <div class="hotspot hint-pulse" style="top: 70%; left: 35%; background: #fff; padding: 8px; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" onclick="collectMemory(2, 'ข้อความสั้นๆ ที่เธอเคยเขียนให้')">
-                    <div style="width: 60px; height: 50px; background: #cbd5e1; font-size: 9px; color: #333; display: flex; align-items: center; justify-content: center;">💌 รูปที่ 3</div>
+        <!-- --- MODAL: LETTER VIEW --- -->
+        <div class="modal-overlay" id="letterModal" onclick="closeLetterModal()">
+            <div class="letter-modal-box" onclick="event.stopPropagation()">
+                <p style="text-align: right; font-size: 0.8rem; color: #718096; margin-bottom: 8px;">ซองจดหมายสีเก่า</p>
+                <div class="letter-content" id="letterTypewriterBox"></div>
+                <div style="margin-top: 20px; text-align: right;">
+                    <button class="glow-btn" style="padding: 6px 18px; font-size: 0.85rem; margin:0;" onclick="closeLetterModal()">พับเก็บจดหมาย</button>
                 </div>
             </div>
         </div>
 
-        <!-- ================= FINAL SCENE : CONFESSION ================= -->
-        <div class="scene" id="scene-final">
-            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px;">
-                <div id="final-text-box" style="margin-bottom: 40px; min-height: 120px;">
-                    <!-- Appended by JS -->
-                </div>
-                <div id="final-buttons" style="opacity: 0; transition: opacity 1s; display: flex; gap: 15px; flex-direction: column; width: 100%;">
-                    <button class="glow-btn" onclick="goToScene(1)" style="width: 100%;">อ่านข้อความอีกครั้ง</button>
-                    <button class="icon-btn" onclick="goToScene(0)" style="width: 100%; padding: 12px; border-radius: 30px;">เริ่มใหม่ตั้งแต่ต้น</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Generic Modal for Memories -->
-    <div class="modal-overlay" id="memory-modal" onclick="closeMemoryModal()">
-        <div class="polaroid">
-            <div class="polaroid-caption" id="memory-modal-text" style="font-size: 1.2rem; padding: 20px 0;">
-                ข้อความความทรงจำ
-            </div>
-            <div style="font-size: 10px; color: #a0aec0;">(แตะเพื่อปิด)</div>
+        <!-- --- WINDOW FRAME BORDER OVERLAY (ให้ความรู้สึกเหมือนมองผ่านหน้าต่างจริง) --- -->
+        <div class="window-frame-border">
+            <div class="window-pane-divider-v"></div>
         </div>
     </div>
 
     <script>
-        // --- SCENE NAVIGATION CONTROLLER ---
-        let currentScene = 0;
-        let collectedCount = 0;
-        let collectedFlags = [false, false, false];
+        // --- STATE MANAGEMENT ---
+        let discoveredCount = 0;
+        let isStoryStarted = false;
+        const totalMemories = 4;
+        let discoveredFlags = { window: false, cafe: false, coffee: false, letter: false };
 
-        function goToScene(sceneIndex) {
-            document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
-            document.getElementById('modal-polaroid').classList.remove('show');
+        // --- START STORY ---
+        function startStory() {
+            const intro = document.getElementById('intro-screen');
+            intro.classList.add('hide');
+            isStoryStarted = true;
             
-            const target = document.getElementById(sceneIndex === 'final' ? 'scene-final' : `scene-${sceneIndex}`);
-            if (target) {
-                target.classList.add('active');
-                currentScene = sceneIndex;
+            // แสดงข้อความเริ่มต้นเบาๆ
+            setTimeout(() => {
+                showHud("ข้างนอกฝนตกหนักเลย... ลองแตะสิ่งของรอบตัวเพื่อดูความรู้สึกที่ซ่อนอยู่สิ");
+            }, 600);
+        }
+
+        // --- HUD CONTROLLER ---
+        function showHud(text) {
+            const hud = document.getElementById('storyHud');
+            const hudText = document.getElementById('hudText');
+            hudText.innerText = text;
+            hud.classList.add('show');
+        }
+
+        function closeHud() {
+            document.getElementById('storyHud').classList.remove('show');
+        }
+
+        // --- OBJECT TRIGGER ROUTER ---
+        function triggerObject(type) {
+            if (!isStoryStarted) return;
+
+            if (type === 'window') {
+                markDiscovered('window');
+                openPolaroid("หน้าต่างอุ่นๆ", "ฝนตกแบบนี้ เปียกหรือเปล่า อย่าลืมพกร่มนะ");
+            } else if (type === 'cafe') {
+                markDiscovered('cafe');
+                openPolaroid("ร้านกาแฟที่เราเคยนั่ง", "รู้ไหม... ที่เราทักไปหาแกก่อน");
+            } else if (type === 'coffee') {
+                markDiscovered('coffee');
+                openPolaroid("แก้วกาแฟอุ่นในมือ", "เพราะเราแอบชอบแก...");
+            } else if (type === 'letter') {
+                markDiscovered('letter');
+                openLetterModal();
+            }
+        }
+
+        function markDiscovered(key) {
+            if (!discoveredFlags[key]) {
+                discoveredFlags[key] = true;
+                discoveredCount++;
+                document.getElementById('progressIndicator').innerText = `ความทรงจำ ${discoveredCount}/${totalMemories}`;
                 
-                // Trigger scene specific animations
-                if (sceneIndex === 3) {
-                    startTypewriter();
-                } else if (sceneIndex === 4) {
-                    runScene4Animations();
-                } else if (sceneIndex === 'final') {
-                    runFinalSceneAnimations();
+                if (discoveredCount === totalMemories) {
+                    setTimeout(triggerFinalScene, 1500);
                 }
             }
         }
 
-        // --- POLAROID MODAL (SCENE 1) ---
-        function openPolaroid(type) {
-            document.getElementById('modal-polaroid').classList.add('show');
-        }
-        function closePolaroid() {
-            document.getElementById('modal-polaroid').classList.remove('show');
+        // --- POLAROID MODAL ---
+        function openPolaroid(captionTitle, captionText) {
+            document.getElementById('polaroidCaptionText').innerHTML = `"${captionText}"`;
+            document.getElementById('polaroidModal').classList.add('show');
         }
 
-        // --- TYPEWRITER EFFECT (SCENE 3) ---
-        const letterContent = "ถึง มินท์\n\nฝนตกทุกวันเลย\nช่วงนี้เธอเป็นยังไงบ้าง\n\nคิดถึงนะ...";
-        let twIndex = 0;
-        function startTypewriter() {
-            const box = document.getElementById('typewriter-box');
+        function closePolaroidModal() {
+            document.getElementById('polaroidModal').classList.remove('show');
+        }
+
+        // --- LETTER TYPEWRITER MODAL ---
+        const letterFullText = "ถึง เธอ...\n\nเราไม่รู้ว่าจะพูดยังไงดี\nแต่จริง ๆ แล้ว...\nเราแอบชอบแกมาตั้งแต่ครั้งแรกเลยนะ ❤️";
+        
+        function openLetterModal() {
+            document.getElementById('letterModal').classList.add('show');
+            startTypewriterLetter();
+        }
+
+        function closeLetterModal() {
+            document.getElementById('letterModal').classList.remove('show');
+            markDiscovered('letter');
+        }
+
+        function startTypewriterLetter() {
+            const box = document.getElementById('letterTypewriterBox');
             box.innerHTML = "";
-            twIndex = 0;
-            document.getElementById('s3-next-btn').style.display = 'none';
+            let idx = 0;
             
             function type() {
-                if (twIndex < letterContent.length) {
-                    box.innerHTML += letterContent.charAt(twIndex) === '\n' ? '<br>' : letterContent.charAt(twIndex);
-                    twIndex++;
-                    setTimeout(type, 70);
-                } else {
-                    document.getElementById('s3-next-btn').style.display = 'block';
+                if (idx < letterFullText.length) {
+                    box.innerHTML += letterFullText.charAt(idx) === '\n' ? '<br>' : letterFullText.charAt(idx);
+                    idx++;
+                    setTimeout(type, 65);
                 }
             }
             type();
         }
 
-        // --- SCENE 4 ANIMATIONS ---
-        function runScene4Animations() {
-            // Gradually reduce rain density via global variable if desired
-            setTimeout(() => {
-                document.getElementById('s4-text-2').style.opacity = '1';
-                document.getElementById('s4-text-2').style.transition = 'opacity 1.5s ease';
-            }, 1500);
-            setTimeout(() => {
-                const btn = document.getElementById('s4-btn');
-                btn.style.opacity = '1';
-                btn.style.pointerEvents = 'auto';
-                btn.style.transition = 'opacity 1.5s ease';
-            }, 3500);
-        }
-
-        // --- MEMORY COLLECTION (SCENE 5) ---
-        function collectMemory(index, text) {
-            if (!collectedFlags[index]) {
-                collectedFlags[index] = true;
-                collectedCount++;
-                document.getElementById('progress-text').innerText = `ความทรงจำ ${collectedCount}/3`;
-            }
-            document.getElementById('memory-modal-text').innerText = text;
-            document.getElementById('memory-modal').classList.add('show');
-
-            if (collectedCount === 3) {
-                setTimeout(() => {
-                    alert("คุณค้นพบความทรงจำทั้งหมดแล้ว บรรยากาศอบอุ่นกำลังเริ่มขึ้น...");
-                    goToScene('final');
-                }, 1200);
-            }
-        }
-
-        function closeMemoryModal() {
-            document.getElementById('memory-modal').classList.remove('show');
-        }
-
-        // --- FINAL SCENE ANIMATIONS ---
-        function runFinalSceneAnimations() {
-            const textBox = document.getElementById('final-text-box');
-            textBox.innerHTML = "";
-            const lines = [
-                "รู้ไหม...",
-                "ที่เราทักไปหาแกก่อน",
-                "เพราะเราแอบชอบแก...",
-                "ตั้งแต่ครั้งแรกที่เจอเลยนะ ❤️"
-            ];
+        // --- FINAL SCENE (SUNSET TRANSITION) ---
+        function triggerFinalScene() {
+            // เปลี่ยนฉากหลังเป็นท้องฟ้ายามเย็น (Sunset)
+            document.getElementById('worldScene').classList.add('sunset');
             
-            let lineIdx = 0;
-            function showLine() {
-                if (lineIdx < lines.length) {
-                    const p = document.createElement('p');
-                    p.className = 'story-text';
-                    p.style.fontSize = lineIdx === 3 ? '1.3rem' : '1.1rem';
-                    p.style.color = lineIdx === 3 ? '#f6ad55' : '#e2e8f0';
-                    p.style.marginBottom = '12px';
-                    p.style.opacity = '0';
-                    p.style.transform = 'translateY(10px)';
-                    p.style.transition = 'all 0.8s ease';
-                    p.innerText = lines[lineIdx];
-                    textBox.appendChild(p);
-                    
-                    setTimeout(() => {
-                        p.style.opacity = '1';
-                        p.style.transform = 'translateY(0)';
-                    }, 50);
-
-                    lineIdx++;
-                    setTimeout(showLine, 1200);
-                } else {
-                    document.getElementById('final-buttons').style.opacity = '1';
-                }
-            }
-            setTimeout(showLine, 500);
+            setTimeout(() => {
+                showHud("ฝนหยุดแล้ว... ท้องฟ้าเปลี่ยนเป็นสีอุ่น ความรู้สึกทั้งหมดก็ชัดเจนขึ้น ❤️");
+            }, 1000);
         }
 
-        // --- CANVAS RAIN ANIMATION SYSTEM ---
+        // --- CANVAS RAIN ANIMATION ---
         const canvas = document.getElementById('rainCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -609,35 +552,33 @@
         resizeCanvas();
 
         let raindrops = [];
-        const maxDrops = 60;
-
-        for (let i = 0; i < maxDrops; i++) {
+        const dropCount = 50;
+        for (let i = 0; i < dropCount; i++) {
             raindrops.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                length: Math.random() * 20 + 10,
-                speed: Math.random() * 7 + 8,
-                opacity: Math.random() * 0.4 + 0.2
+                length: Math.random() * 18 + 8,
+                speed: Math.random() * 6 + 6,
+                opacity: Math.random() * 0.35 + 0.15
             });
         }
 
         function animateRain() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw rain if scene 4 is not active or fading out rain
-            ctx.lineWidth = 1.5;
+            ctx.lineWidth = 1.2;
+
             for (let drop of raindrops) {
-                ctx.strokeStyle = `rgba(174, 214, 241, ${currentScene === 4 ? drop.opacity * 0.3 : drop.opacity})`;
+                ctx.strokeStyle = `rgba(180, 210, 245, ${drop.opacity})`;
                 ctx.beginPath();
                 ctx.moveTo(drop.x, drop.y);
-                ctx.lineTo(drop.x - 1, drop.y + drop.length);
+                ctx.lineTo(drop.x - 0.8, drop.y + drop.length);
                 ctx.stroke();
 
                 drop.y += drop.speed;
-                drop.x -= 0.5;
+                drop.x -= 0.4;
 
                 if (drop.y > canvas.height) {
-                    drop.y = -20;
+                    drop.y = -15;
                     drop.x = Math.random() * canvas.width;
                 }
             }
@@ -647,54 +588,49 @@
 
         // --- AUDIO AMBIENCE SIMULATOR (Web Audio API) ---
         let audioCtx = null;
-        let isAudioPlaying = false;
         let noiseNode = null;
+        let isAudioPlaying = false;
 
-        document.getElementById('audioToggle').addEventListener('click', function() {
+        function toggleAudio() {
+            const btn = document.getElementById('audioToggleBtn');
             if (!isAudioPlaying) {
                 try {
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    // Create white noise for rain sound effect
-                    const bufferSize = 2 * audioCtx.sampleRate;
-                    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                    const output = noiseBuffer.getChannelData(0);
+                    const bufferSize = audioCtx.sampleRate * 2;
+                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const data = buffer.getChannelData(0);
                     for (let i = 0; i < bufferSize; i++) {
-                        output[i] = Math.random() * 2 - 1;
+                        data[i] = Math.random() * 2 - 1;
                     }
 
                     noiseNode = audioCtx.createBufferSource();
-                    noiseNode.buffer = noiseBuffer;
+                    noiseNode.buffer = buffer;
                     noiseNode.loop = true;
 
-                    // Filter to make it sound like soft rain (lowpass filter)
                     const filter = audioCtx.createBiquadFilter();
                     filter.type = 'lowpass';
-                    filter.frequency.value = 800;
+                    filter.frequency.value = 650;
 
-                    const gainNode = audioCtx.createGain();
-                    gainNode.gain.value = 0.15;
+                    const gain = audioCtx.createGain();
+                    gain.gain.value = 0.12;
 
                     noiseNode.connect(filter);
-                    filter.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
+                    filter.connect(gain);
+                    gain.connect(audioCtx.destination);
 
                     noiseNode.start();
                     isAudioPlaying = true;
-                    this.innerText = "🔇 ปิดเสียงฝน";
+                    btn.innerText = "🔇 ปิดเสียงฝน";
                 } catch(e) {
-                    console.log("Audio not supported or blocked", e);
+                    console.log("Audio Context blocked or not supported", e);
                 }
             } else {
-                if (noiseNode) {
-                    noiseNode.stop();
-                }
-                if (audioCtx) {
-                    audioCtx.close();
-                }
+                if (noiseNode) noiseNode.stop();
+                if (audioCtx) audioCtx.close();
                 isAudioPlaying = false;
-                this.innerText = "🔊 เสียงฝน";
+                btn.innerText = "🔊 เสียงฝน";
             }
-        });
+        }
     </script>
 </body>
 </html>
