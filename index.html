@@ -246,7 +246,7 @@
 
         <!-- YouTube Audio Player -->
         <div id="youtube-player-container" style="position: absolute; left: -9999px;">
-            <iframe id="yt-player" width="200" height="200" src="https://www.youtube.com/embed/faccKGHl5jM?enablejsapi=1&autoplay=1&loop=1&playlist=faccKGHl5jM" frameborder="0"></iframe>
+            <iframe id="yt-player" width="200" height="200" src="https://www.youtube.com/embed/faccKGHl5jM?enablejsapi=1&autoplay=0&loop=1&playlist=faccKGHl5jM&controls=0" frameborder="0"></iframe>
         </div>
 
         <!-- Memory Modal -->
@@ -634,7 +634,6 @@
             document.getElementById('memory-modal').classList.remove('show');
 
             if(currentStep === 6) {
-                // รีเซ็ตกลับมาจุดเริ่มต้นใหม่อัตโนมัติเมื่อเปิดครบทุกความทรงจำแล้ว
                 setTimeout(() => {
                     currentStep = 0;
                     document.getElementById('progressText').innerText = `⭐ ความทรงจำ 0/6`;
