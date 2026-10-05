@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>คืนนี้ฝนตกอีกแล้วนะ...</title>
-    <!-- Google Fonts: Prompt สำหรับ UI ทั่วไป และ Sarabun / Caveat สำหรับข้อความลายมือ -->
+    <!-- Google Fonts: Sarabun สำหรับเนื้อเรื่องทั่วไป และ Caveat สำหรับข้อความลายมือโพลารอยด์ -->
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Prompt:wght@300;400;500&family=Sarabun:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <style>
         * {
@@ -16,7 +16,7 @@
         }
 
         body {
-            background-color: #04060b;
+            background-color: #030509;
             font-family: 'Prompt', sans-serif;
             color: #e2e8f0;
             height: 100vh;
@@ -27,141 +27,180 @@
             overflow: hidden;
         }
 
-        /* Mobile First Window Frame Container (Ratio 9:16) */
+        /* Mobile Container Ratio 9:16 Frame */
         #app-container {
             width: 100%;
             max-width: 420px;
             height: 100%;
             max-height: 880px;
-            background: #090d16;
+            background: #080c18;
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 50px rgba(0,0,0,0.9);
-            display: flex;
-            flex-direction: column;
         }
 
         @media (min-width: 424px) {
             #app-container {
                 border-radius: 36px;
-                border: 10px solid #1f2430;
+                border: 10px solid #1a202c;
                 height: 92vh;
             }
         }
 
-        /* --- CINEMATIC WINDOW FRAME BORDER --- */
-        .window-frame-border {
+        /* --- CAMERA & PARALLAX SCENE SYSTEM --- */
+        #camera-rig {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 220%; /* ขยายความกว้างเพื่อให้กล้อง Pan ซ้าย-ขวาได้ */
+            height: 100%;
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: transform;
+        }
+
+        /* Parallax Layers */
+        .parallax-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border: 14px solid #181d28;
-            box-shadow: inset 0 0 25px rgba(0,0,0,0.8), 0 0 15px rgba(0,0,0,0.5);
-            pointer-events: none;
-            z-index: 40;
-            display: flex;
-            justify-content: space-between;
-        }
-        /* หน้าต่างจำลองแบ่งช่องซ้ายขวา/กลาง */
-        .window-pane-divider-v {
-            width: 6px;
-            height: 100%;
-            background: #181d28;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.6);
-            margin: 0 auto;
+            will-change: transform;
         }
 
-        /* Film Grain & Vignette */
+        /* Canvas ฝนและละอองน้ำ */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 25;
+        }
+
+        /* Film Grain Overlay */
         .grain-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E');
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.04"/%3E%3C/svg%3E');
             pointer-events: none;
-            z-index: 35;
+            z-index: 30;
         }
 
-        .vignette {
+        /* --- BACKGROUND SKY & WORLD GRADIENT --- */
+        .world-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            box-shadow: inset 0 0 80px rgba(0,0,0,0.8);
-            pointer-events: none;
-            z-index: 36;
+            background: linear-gradient(180deg, #070b16 0%, #11182c 50%, #191424 100%);
+            transition: background 2.5s ease;
+            z-index: 1;
+        }
+        .world-bg.sunset {
+            background: linear-gradient(180deg, #2b1428 0%, #5c2d33 40%, #9e4e3b 75%, #d18250 100%);
         }
 
-        /* Canvas สำหรับฝนและเอฟเฟกต์ละอองแสง */
-        canvas {
+        /* --- VECTOR CITY ILLUSTRATIONS (CSS / SVG SIMULATION) --- */
+        .city-layer {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
+            bottom: 22%;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            z-index: 3;
+        }
+
+        /* Windows with flickering lights */
+        .building-window {
+            position: absolute;
+            background: rgba(246, 173, 85, 0.85);
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba(246, 173, 85, 0.6);
+            animation: windowFlicker 4s infinite alternate;
+        }
+        @keyframes windowFlicker {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; filter: drop-shadow(0 0 12px #f6ad55); }
+            100% { opacity: 0.6; }
+        }
+
+        /* Road & Water Puddle Reflection */
+        .road-layer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 25%;
+            background: linear-gradient(180deg, #0d1222 0%, #05070f 100%);
+            border-top: 1px solid rgba(246, 173, 85, 0.25);
             z-index: 5;
         }
 
-        /* World Scene (ภายในกรอบหน้าต่าง) */
-        .world-scene {
+        /* Paper Boat Animation */
+        #paper-boat {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, #0b1021 0%, #161e38 50%, #1f1b2e 100%);
-            transition: background 2s ease;
-            z-index: 2;
+            bottom: 12%;
+            left: 35%;
+            font-size: 24px;
+            z-index: 10;
+            cursor: pointer;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+            animation: boatFloat 3.5s ease-in-out infinite;
+            transition: transform 0.3s;
+        }
+        #paper-boat:hover { transform: scale(1.15); }
+        @keyframes boatFloat {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-6px) rotate(3deg); }
         }
 
-        .world-scene.sunset {
-            background: linear-gradient(180deg, #2c162d 0%, #613033 40%, #a8583c 80%, #d49157 100%);
+        /* Steam from Coffee Shop */
+        .steam-particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 50%;
+            filter: blur(4px);
+            animation: steamRise 3s infinite linear;
+            pointer-events: none;
+            z-index: 8;
+        }
+        @keyframes steamRise {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            50% { opacity: 0.4; }
+            100% { transform: translateY(-40px) scale(1.6); opacity: 0; }
         }
 
-        /* Background Illustration Layers (CSS Vector art) */
-        .sky-bg { position: absolute; width: 100%; height: 60%; top: 0; left: 0; }
-        .city-silhouette {
-            position: absolute; bottom: 15%; left: 0; width: 100%; height: 50%;
-            background: 
-                linear-gradient(0deg, #0c1122 0%, transparent 100%),
-                repeating-linear-gradient(90deg, transparent, transparent 35px, #10162a 35px, #10162a 70px);
-            z-index: 3;
-        }
-        .road-reflection {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 25%;
-            background: linear-gradient(180deg, #0d1222 0%, #060913 100%);
-            border-top: 1px solid rgba(246, 173, 85, 0.2);
-            z-index: 4;
-        }
-
-        /* --- INTERACTIVE OBJECTS (HOTSPOTS) --- */
+        /* --- INTERACTIVE HOTSPOTS --- */
         .interactive-obj {
             position: absolute;
             cursor: pointer;
             z-index: 15;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .interactive-obj:hover {
-            transform: scale(1.08);
-        }
-        .interactive-obj:active {
-            transform: scale(0.95);
-        }
+        .interactive-obj:hover { transform: scale(1.08); }
+        .interactive-obj:active { transform: scale(0.95); }
 
-        /* Glowing Pulse Hint สำหรับวัตถุกดได้ */
-        .pulse-glow {
-            animation: objectGlow 2.5s infinite ease-in-out;
+        .pulse-hint {
+            animation: hintGlow 2.5s infinite ease-in-out;
         }
-        @keyframes objectGlow {
+        @keyframes hintGlow {
             0%, 100% { filter: drop-shadow(0 0 3px rgba(246,173,85,0.4)); }
-            50% { filter: drop-shadow(0 0 10px rgba(246,173,85,0.9)); }
+            50% { filter: drop-shadow(0 0 12px rgba(246,173,85,0.9)); }
         }
 
-        /* --- DIALOGUE / STORY OVERLAY BOX --- */
+        /* --- STORY HUD DIALOGUE BOX --- */
         .story-hud {
             position: absolute;
-            bottom: 30px;
-            left: 24px;
-            right: 24px;
-            background: rgba(12, 16, 28, 0.85);
+            bottom: 25px;
+            left: 20px;
+            right: 20px;
+            background: rgba(10, 14, 24, 0.88);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255,255,255,0.12);
             padding: 16px 20px;
             border-radius: 16px;
             z-index: 50;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.5s cubic-bezier(0.1, 0.9, 0.2, 1);
@@ -180,7 +219,7 @@
             text-align: center;
             min-height: 45px;
         }
-        .story-hud-next {
+        .story-hud-close {
             display: block;
             margin: 10px auto 0 auto;
             background: none;
@@ -188,14 +227,13 @@
             color: #f6ad55;
             font-size: 0.85rem;
             cursor: pointer;
-            letter-spacing: 0.5px;
         }
 
-        /* --- MODAL POPUPS (POLAROID & LETTER) --- */
+        /* --- MODALS (POLAROID & LETTER) --- */
         .modal-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(4, 6, 11, 0.8);
+            background: rgba(3, 5, 10, 0.8);
             backdrop-filter: blur(8px);
             z-index: 60;
             display: flex;
@@ -210,12 +248,12 @@
             visibility: visible;
         }
 
-        /* Polaroid Card */
+        /* Polaroid */
         .polaroid-card {
             background: #fdfbf7;
             padding: 16px 16px 42px 16px;
             width: 270px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
             transform: scale(0.7) rotate(-6deg);
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
@@ -236,11 +274,10 @@
             border-right: 2px dashed rgba(0,0,0,0.15);
         }
         .polaroid-img-box {
-            width: 100%; height: 190px;
+            width: 100%; height: 180px;
             background: #232d42;
             display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
-            position: relative;
+            font-size: 2.5rem;
         }
         .polaroid-caption {
             margin-top: 14px;
@@ -249,11 +286,11 @@
             color: #4a5568;
         }
 
-        /* Letter Envelope Container */
+        /* Letter Box */
         .letter-modal-box {
             width: 310px;
             background: #f4eee1;
-            padding: 30px 22px;
+            padding: 28px 22px;
             border-radius: 4px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.8);
             color: #2c2c2c;
@@ -271,14 +308,14 @@
             font-size: 1.05rem;
             line-height: 1.9;
             white-space: pre-line;
-            min-height: 160px;
+            min-height: 150px;
         }
 
-        /* --- INTRO SCREEN & START BUTTON --- */
+        /* --- INTRO SCREEN --- */
         #intro-screen {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(7, 10, 19, 0.92);
+            background: rgba(6, 9, 17, 0.94);
             z-index: 70;
             display: flex;
             flex-direction: column;
@@ -302,32 +339,33 @@
             border-radius: 30px;
             cursor: pointer;
             box-shadow: 0 0 25px rgba(237, 137, 54, 0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s;
             margin-top: 25px;
         }
-        .glow-btn:active {
-            transform: scale(0.95);
-        }
+        .glow-btn:active { transform: scale(0.95); }
 
-        /* Progress tracker บนมุมขวา */
-        .story-progress {
+        /* UI Top bar */
+        .top-ui {
             position: absolute;
-            top: 25px;
-            right: 25px;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 45;
+            pointer-events: none;
+        }
+        .ui-pill {
             background: rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.15);
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 0.8rem;
-            z-index: 45;
             backdrop-filter: blur(4px);
+            pointer-events: auto;
         }
-
-        /* Audio toggle button มุมซ้ายบน */
         .audio-btn {
-            position: absolute;
-            top: 25px;
-            left: 25px;
             background: rgba(255,255,255,0.08);
             border: 1px solid rgba(255,255,255,0.15);
             color: #fff;
@@ -335,81 +373,87 @@
             border-radius: 20px;
             font-size: 11px;
             cursor: pointer;
-            z-index: 45;
             backdrop-filter: blur(4px);
+            pointer-events: auto;
         }
     </style>
 </head>
 <body>
 
     <div id="app-container">
-        <!-- Film Grain & Vignette Effects -->
+        <!-- Film Grain Overlay -->
         <div class="grain-overlay"></div>
-        <div class="vignette"></div>
 
-        <!-- Rain Canvas -->
-        <canvas id="rainCanvas"></canvas>
+        <!-- Rain & Ripple Canvas (Continuous Animation) -->
+        <canvas id="liveCanvas"></canvas>
 
-        <!-- Audio Ambience Toggle -->
-        <button class="audio-btn" id="audioToggleBtn" onclick="toggleAudio()">🔊 เสียงฝน</button>
-
-        <!-- Progress Indicator -->
-        <div class="story-progress" id="progressIndicator">ความทรงจำ 0/4</div>
+        <!-- Top UI Controls -->
+        <div class="top-ui">
+            <button class="audio-btn" id="audioToggleBtn" onclick="toggleAudio()">🔊 เสียงฝน</button>
+            <div class="ui-pill" id="progressIndicator">ความทรงจำ 0/4</div>
+        </div>
 
         <!-- --- INTRO START SCREEN --- -->
         <div id="intro-screen">
-            <p style="font-family: 'Sarabun', sans-serif; font-size: 1.35rem; color: #cbd5e1; margin-bottom: 12px; line-height: 1.8;">
+            <p style="font-family: 'Sarabun', sans-serif; font-size: 1.4rem; color: #cbd5e1; margin-bottom: 12px; line-height: 1.8;">
                 "คืนนี้ฝนตกอีกแล้วนะ..."
             </p>
             <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 30px; font-weight: 300;">
-                มองผ่านหน้าต่างความทรงจำออกไปสิ มีบางสิ่งซ่อนอยู่
+                แตะสำรวจเมืองเล็กๆ ยามค่ำคืน เพื่อค้นหาความทรงจำที่ซ่อนอยู่
             </p>
-            <button class="glow-btn" onclick="startStory()">เปิดหน้าต่างสำรวจ</button>
+            <button class="glow-btn" onclick="startStory()">ก้าวเข้าสู่เรื่องราว</button>
         </div>
 
-        <!-- --- WORLD SCENE (มองผ่านกรอบหน้าต่าง) --- -->
-        <div class="world-scene" id="worldScene">
-            <div class="sky-bg"></div>
-            <div class="city-silhouette"></div>
-            <div class="road-reflection"></div>
+        <!-- --- CAMERA RIG & PARALLAX SCENE --- -->
+        <div id="camera-rig">
+            <!-- WORLD SCENE BACKGROUND -->
+            <div class="world-bg" id="worldBg"></div>
 
-            <!-- Interactive Object 1: หน้าต่างห้องอุ่นๆ (ซ้ายบน) -->
-            <div class="interactive-obj pulse-glow" style="top: 22%; left: 18%; width: 55px; height: 75px; background: rgba(246,173,85,0.35); border-radius: 4px; border: 1px solid #f6ad55;" onclick="triggerObject('window')">
-                <div style="font-size: 9px; color: #f6ad55; position: absolute; bottom: -18px; left: -2px; width: 70px; text-align: center;">หน้าต่างห้อง</div>
+            <!-- LAYER 1: City & Buildings (Parallax Slow) -->
+            <div class="parallax-layer" data-speed="0.2" style="transform: translateX(0px);">
+                <div class="city-layer">
+                    <!-- หน้าต่างห้องติดไฟอุ่นๆ -->
+                    <div class="building-window pulse-hint" style="top: 25%; left: 12%; width: 45px; height: 65px;" onclick="triggerObject('window')"></div>
+                    <div class="building-window" style="top: 35%; left: 32%; width: 35px; height: 50px;"></div>
+                    <div class="building-window" style="top: 20%; left: 58%; width: 40px; height: 60px;"></div>
+                    <!-- ร้านกาแฟ -->
+                    <div class="building-window pulse-hint" style="top: 40%; left: 78%; width: 70px; height: 45px; background: rgba(237,137,54,0.7);" onclick="triggerObject('cafe')"></div>
+                </div>
             </div>
 
-            <!-- Interactive Object 2: ร้านกาแฟ (ขวาบน) -->
-            <div class="interactive-obj pulse-glow" style="top: 32%; right: 18%; width: 65px; height: 50px; background: rgba(237,137,54,0.25); border-radius: 6px; border: 1px solid #ed8936; display: flex; align-items: center; justify-content: center;" onclick="triggerObject('cafe')">
-                <span style="font-size: 9px; color: #ed8936; font-weight: 500;">ร้านกาแฟ</span>
-            </div>
+            <!-- LAYER 2: Foreground Street & Interactive Objects (Parallax Normal) -->
+            <div class="parallax-layer" data-speed="0.5" style="transform: translateX(0px);">
+                <div class="road-layer"></div>
 
-            <!-- Interactive Object 3: แก้วกาแฟริมหน้าต่าง (ตรงกลางล่าง) -->
-            <div class="interactive-obj pulse-glow" style="bottom: 22%; left: 30%; width: 35px; height: 35px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center;" onclick="triggerObject('coffee')">
-                <span style="font-size: 14px;">☕</span>
-            </div>
+                <!-- Paper Boat (Interactive Object 1) -->
+                <div id="paper-boat" class="pulse-hint" onclick="triggerObject('boat')" title="เรือกระดาษ">
+                    ⛵
+                </div>
 
-            <!-- Interactive Object 4: ซองจดหมายเก่าบนถนน (กลางล่าง) -->
-            <div class="interactive-obj pulse-glow" style="bottom: 12%; right: 32%; width: 45px; height: 30px; background: #f4eee1; border-radius: 3px; box-shadow: 0 0 10px rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center;" onclick="triggerObject('letter')">
-                <span style="font-size: 8px; color: #333; font-weight: bold;">💌 จดหมาย</span>
+                <!-- Polaroid Photo on Ground (Interactive Object 2) -->
+                <div class="interactive-obj pulse-hint" style="bottom: 15%; left: 62%; width: 45px; height: 55px; background: #fdfbf7; border-radius: 2px; padding: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.6); transform: rotate(12deg);" onclick="triggerObject('photo')">
+                    <div style="width: 100%; height: 35px; background: #232d42; display:flex; align-items:center; justify-content:center; font-size:12px;">🖼️</div>
+                </div>
+
+                <!-- Envelope on Ground (Interactive Object 3) -->
+                <div class="interactive-obj pulse-hint" style="bottom: 12%; left: 88%; width: 50px; height: 35px; background: #f4eee1; border-radius: 3px; box-shadow: 0 4px 10px rgba(0,0,0,0.6);" onclick="triggerObject('letter')">
+                    <div style="font-size: 8px; color: #333; text-align: center; margin-top: 10px; font-weight: bold;">💌 จดหมาย</div>
+                </div>
             </div>
         </div>
 
         <!-- --- STORY HUD DIALOGUE BOX --- -->
         <div class="story-hud" id="storyHud">
             <div class="story-hud-text" id="hudText">ข้อความเรื่องราว...</div>
-            <button class="story-hud-next" onclick="closeHud()">แตะเพื่อปิดหรือสำรวจต่อ ➔</button>
+            <button class="story-hud-close" onclick="closeHud()">แตะเพื่อปิดและสำรวจต่อ ➔</button>
         </div>
 
         <!-- --- MODAL: POLAROID VIEW --- -->
         <div class="modal-overlay" id="polaroidModal" onclick="closePolaroidModal()">
             <div class="polaroid-card">
-                <div class="polaroid-img-box">
-                    <div style="font-size: 2rem;">🌧️</div>
-                </div>
-                <div class="polaroid-caption" id="polaroidCaptionText">
-                    "จำวันนั้นได้ไหม..."
-                </div>
-                <div style="font-size: 9px; color: #a0aec0; margin-top: 8px;">(แตะที่นี่เพื่อเก็บความทรงจำ)</div>
+                <div class="polaroid-img-box" id="polaroidEmoji">📸</div>
+                <div class="polaroid-caption" id="polaroidCaptionText">"จำวันนั้นได้ไหม..."</div>
+                <div style="font-size: 9px; color: #a0aec0; margin-top: 8px;">(แตะเพื่อปิด)</div>
             </div>
         </div>
 
@@ -423,58 +467,71 @@
                 </div>
             </div>
         </div>
-
-        <!-- --- WINDOW FRAME BORDER OVERLAY (ให้ความรู้สึกเหมือนมองผ่านหน้าต่างจริง) --- -->
-        <div class="window-frame-border">
-            <div class="window-pane-divider-v"></div>
-        </div>
     </div>
 
     <script>
-        // --- STATE MANAGEMENT ---
+        // --- APP STATE ---
+        let isStarted = false;
         let discoveredCount = 0;
-        let isStoryStarted = false;
         const totalMemories = 4;
-        let discoveredFlags = { window: false, cafe: false, coffee: false, letter: false };
+        let discoveredFlags = { window: false, cafe: false, boat: false, photo: false, letter: false };
+        let currentCameraPos = 0; // ตำแหน่งกล้องปัจจุบัน (px)
 
         // --- START STORY ---
         function startStory() {
-            const intro = document.getElementById('intro-screen');
-            intro.classList.add('hide');
-            isStoryStarted = true;
-            
-            // แสดงข้อความเริ่มต้นเบาๆ
+            document.getElementById('intro-screen').classList.add('hide');
+            isStarted = true;
             setTimeout(() => {
-                showHud("ข้างนอกฝนตกหนักเลย... ลองแตะสิ่งของรอบตัวเพื่อดูความรู้สึกที่ซ่อนอยู่สิ");
+                showHud("ข้างนอกฝนตกหนักเลย... ลองแตะสิ่งของในเมืองเพื่อค้นหาความรู้สึกที่ซ่อนอยู่");
             }, 600);
         }
 
         // --- HUD CONTROLLER ---
         function showHud(text) {
-            const hud = document.getElementById('storyHud');
-            const hudText = document.getElementById('hudText');
-            hudText.innerText = text;
-            hud.classList.add('show');
+            document.getElementById('hudText').innerText = text;
+            document.getElementById('storyHud').classList.add('show');
         }
 
         function closeHud() {
             document.getElementById('storyHud').classList.remove('show');
         }
 
-        // --- OBJECT TRIGGER ROUTER ---
+        // --- CAMERA PAN & PARALLAX SYSTEM ---
+        function panCameraTo(targetX) {
+            currentCameraPos = targetX;
+            const rig = document.getElementById('camera-rig');
+            rig.style.transform = `translateX(${targetX}px)`;
+
+            // Parallax calculation for layers
+            const layers = document.querySelectorAll('.parallax-layer');
+            layers.forEach(layer => {
+                const speed = parseFloat(layer.getAttribute('data-speed'));
+                layer.style.transform = `translateX(${-targetX * speed}px)`;
+            });
+        }
+
+        // --- OBJECT INTERACTION ROUTER ---
         function triggerObject(type) {
-            if (!isStoryStarted) return;
+            if (!isStarted) return;
 
             if (type === 'window') {
+                panCameraTo(0);
                 markDiscovered('window');
-                openPolaroid("หน้าต่างอุ่นๆ", "ฝนตกแบบนี้ เปียกหรือเปล่า อย่าลืมพกร่มนะ");
+                openPolaroid("🏠 หน้าต่างอุ่นๆ", "ฝนตกแบบนี้ เปียกหรือเปล่า อย่าลืมพกร่มนะ");
             } else if (type === 'cafe') {
+                panCameraTo(-120);
                 markDiscovered('cafe');
-                openPolaroid("ร้านกาแฟที่เราเคยนั่ง", "รู้ไหม... ที่เราทักไปหาแกก่อน");
-            } else if (type === 'coffee') {
-                markDiscovered('coffee');
-                openPolaroid("แก้วกาแฟอุ่นในมือ", "เพราะเราแอบชอบแก...");
+                openPolaroid("☕ ร้านกาแฟ", "รู้ไหม... ที่เราทักไปหาแกก่อน");
+            } else if (type === 'boat') {
+                panCameraTo(-60);
+                markDiscovered('boat');
+                openPolaroid("⛵ เรือกระดาษ", "เพราะเราแอบชอบแก...");
+            } else if (type === 'photo') {
+                panCameraTo(-180);
+                markDiscovered('photo');
+                openPolaroid("✨ รูปถ่ายความทรงจำ", "ตั้งแต่ครั้งแรกที่เจอเลยนะ");
             } else if (type === 'letter') {
+                panCameraTo(-220);
                 markDiscovered('letter');
                 openLetterModal();
             }
@@ -483,48 +540,43 @@
         function markDiscovered(key) {
             if (!discoveredFlags[key]) {
                 discoveredFlags[key] = true;
-                discoveredCount++;
+                discoveredCount = Math.min(totalMemories, discoveredCount + 1);
                 document.getElementById('progressIndicator').innerText = `ความทรงจำ ${discoveredCount}/${totalMemories}`;
-                
+
                 if (discoveredCount === totalMemories) {
-                    setTimeout(triggerFinalScene, 1500);
+                    setTimeout(triggerFinalScene, 1800);
                 }
             }
         }
 
-        // --- POLAROID MODAL ---
-        function openPolaroid(captionTitle, captionText) {
-            document.getElementById('polaroidCaptionText').innerHTML = `"${captionText}"`;
+        // --- MODAL POPUPS ---
+        function openPolaroid(emoji, caption) {
+            document.getElementById('polaroidEmoji').innerText = emoji;
+            document.getElementById('polaroidCaptionText').innerText = `"${caption}"`;
             document.getElementById('polaroidModal').classList.add('show');
         }
-
         function closePolaroidModal() {
             document.getElementById('polaroidModal').classList.remove('show');
         }
 
-        // --- LETTER TYPEWRITER MODAL ---
-        const letterFullText = "ถึง เธอ...\n\nเราไม่รู้ว่าจะพูดยังไงดี\nแต่จริง ๆ แล้ว...\nเราแอบชอบแกมาตั้งแต่ครั้งแรกเลยนะ ❤️";
-        
+        const letterFullText = "ถึง เธอ...\n\nเราไม่รู้ว่าจะพูดยังไงดี\nแต่จริง ๆ แล้ว...\nเราแอบชอบแกมานานแล้วนะ ❤️";
         function openLetterModal() {
             document.getElementById('letterModal').classList.add('show');
             startTypewriterLetter();
         }
-
         function closeLetterModal() {
             document.getElementById('letterModal').classList.remove('show');
             markDiscovered('letter');
         }
-
         function startTypewriterLetter() {
             const box = document.getElementById('letterTypewriterBox');
             box.innerHTML = "";
             let idx = 0;
-            
             function type() {
                 if (idx < letterFullText.length) {
                     box.innerHTML += letterFullText.charAt(idx) === '\n' ? '<br>' : letterFullText.charAt(idx);
                     idx++;
-                    setTimeout(type, 65);
+                    setTimeout(type, 60);
                 }
             }
             type();
@@ -532,16 +584,14 @@
 
         // --- FINAL SCENE (SUNSET TRANSITION) ---
         function triggerFinalScene() {
-            // เปลี่ยนฉากหลังเป็นท้องฟ้ายามเย็น (Sunset)
-            document.getElementById('worldScene').classList.add('sunset');
-            
+            document.getElementById('worldBg').classList.add('sunset');
             setTimeout(() => {
-                showHud("ฝนหยุดแล้ว... ท้องฟ้าเปลี่ยนเป็นสีอุ่น ความรู้สึกทั้งหมดก็ชัดเจนขึ้น ❤️");
-            }, 1000);
+                showHud("ฝนหยุดแล้ว... ท้องฟ้าเปลี่ยนเป็นสีอุ่น ความรู้สึกทั้งหมดชัดเจนขึ้นแล้ว ❤️");
+            }, 1200);
         }
 
-        // --- CANVAS RAIN ANIMATION ---
-        const canvas = document.getElementById('rainCanvas');
+        // --- CONTINUOUS LIVE CANVAS ANIMATION (RAIN, RIPPLES & PARTICLES) ---
+        const canvas = document.getElementById('liveCanvas');
         const ctx = canvas.getContext('2d');
 
         function resizeCanvas() {
@@ -551,40 +601,75 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
+        // Rain particles
         let raindrops = [];
-        const dropCount = 50;
-        for (let i = 0; i < dropCount; i++) {
+        const maxDrops = 80;
+        for (let i = 0; i < maxDrops; i++) {
             raindrops.push({
-                x: Math.random() * canvas.width,
+                x: Math.random() * canvas.width * 1.5,
                 y: Math.random() * canvas.height,
-                length: Math.random() * 18 + 8,
-                speed: Math.random() * 6 + 6,
-                opacity: Math.random() * 0.35 + 0.15
+                length: Math.random() * 20 + 10,
+                speed: Math.random() * 8 + 7,
+                opacity: Math.random() * 0.4 + 0.15
             });
         }
 
-        function animateRain() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.lineWidth = 1.2;
+        // Water ripples on ground road
+        let ripples = [];
+        function addRipple() {
+            if (ripples.length < 15) {
+                ripples.push({
+                    x: Math.random() * canvas.width,
+                    y: canvas.height * 0.78 + Math.random() * (canvas.height * 0.2),
+                    radius: 2,
+                    maxRadius: Math.random() * 15 + 10,
+                    opacity: 0.6
+                });
+            }
+        }
+        setInterval(addRipple, 400);
 
+        function animateWorld() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Draw Rain
+            ctx.lineWidth = 1.2;
             for (let drop of raindrops) {
-                ctx.strokeStyle = `rgba(180, 210, 245, ${drop.opacity})`;
+                ctx.strokeStyle = `rgba(180, 215, 250, ${drop.opacity})`;
                 ctx.beginPath();
                 ctx.moveTo(drop.x, drop.y);
-                ctx.lineTo(drop.x - 0.8, drop.y + drop.length);
+                ctx.lineTo(drop.x - 0.6, drop.y + drop.length);
                 ctx.stroke();
 
                 drop.y += drop.speed;
-                drop.x -= 0.4;
+                drop.x -= 0.3;
 
                 if (drop.y > canvas.height) {
-                    drop.y = -15;
-                    drop.x = Math.random() * canvas.width;
+                    drop.y = -20;
+                    drop.x = Math.random() * canvas.width * 1.5;
                 }
             }
-            requestAnimationFrame(animateRain);
+
+            // 2. Draw Ripples on road
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                let r = ripples[i];
+                ctx.strokeStyle = `rgba(246, 173, 85, ${r.opacity * 0.4})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.ellipse(r.x, r.y, r.radius, r.radius * 0.4, 0, 0, Math.PI * 2);
+                ctx.stroke();
+
+                r.radius += 0.4;
+                r.opacity -= 0.02;
+
+                if (r.opacity <= 0 || r.radius >= r.maxRadius) {
+                    ripples.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animateWorld);
         }
-        animateRain();
+        animateWorld();
 
         // --- AUDIO AMBIENCE SIMULATOR (Web Audio API) ---
         let audioCtx = null;
@@ -609,7 +694,7 @@
 
                     const filter = audioCtx.createBiquadFilter();
                     filter.type = 'lowpass';
-                    filter.frequency.value = 650;
+                    filter.frequency.value = 600;
 
                     const gain = audioCtx.createGain();
                     gain.gain.value = 0.12;
@@ -622,7 +707,7 @@
                     isAudioPlaying = true;
                     btn.innerText = "🔇 ปิดเสียงฝน";
                 } catch(e) {
-                    console.log("Audio Context blocked or not supported", e);
+                    console.log("Audio Context blocked", e);
                 }
             } else {
                 if (noiseNode) noiseNode.stop();
